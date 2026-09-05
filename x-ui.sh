@@ -29,7 +29,7 @@ sereality_normalize_version() {
 if [[ "${1:-}" == "--print-sereality-config" ]]; then
     printf '%s\n' \
         "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')" \
-        "$(sereality_raw_asset_url 'v1.0.0' 'install.sh')"
+        "$(sereality_raw_asset_url 'v1.0.1' 'install.sh')"
     exit 0
 fi
 

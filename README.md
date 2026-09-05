@@ -7,12 +7,12 @@
 <p align="center"><strong>Web Panel สำหรับจัดการ Xray ที่เรียบง่าย ปลอดภัย และใช้ธีมชมพู–ขาว–ดำ</strong></p>
 
 <p align="center">
-  <a href="https://github.com/natthapon07032005/sereality-panel/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Sereality%20Panel-v1.0.0-ff4f9a" alt="Sereality Panel v1.0.0"></a>
+  <a href="https://github.com/natthapon07032005/sereality-panel/releases/tag/v1.0.1"><img src="https://img.shields.io/badge/Sereality%20Panel-v1.0.1-ff4f9a" alt="Sereality Panel v1.0.1"></a>
   <a href="https://github.com/natthapon07032005/sereality-panel/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/natthapon07032005/sereality-panel/release.yml?label=build" alt="Build status"></a>
   <a href="https://github.com/natthapon07032005/sereality-panel/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-black" alt="GPL-3.0 license"></a>
 </p>
 
-Sereality Panel คือโปรเจกต์ที่นำโค้ดฐานจาก 3x-ui รุ่นเสถียร `v2.5.5` มาพัฒนาต่อภายใต้ชื่อและทิศทางของ Sereality โดยรุ่นแรกของโปรเจกต์ใช้หมายเลขเวอร์ชัน `v1.0.0` เพื่อแยกจากเวอร์ชันของโค้ดฐานอย่างชัดเจน
+Sereality Panel คือโปรเจกต์ที่นำโค้ดฐานจาก 3x-ui รุ่นเสถียร `v2.5.5` มาพัฒนาต่อภายใต้ชื่อและทิศทางของ Sereality โดยรุ่นล่าสุดของโปรเจกต์ใช้หมายเลขเวอร์ชัน `v1.0.1` เพื่อแยกจากเวอร์ชันของโค้ดฐานอย่างชัดเจน
 
 > โปรเจกต์นี้จัดทำเพื่อการเรียนรู้ การทดสอบ และการบริหารเซิร์ฟเวอร์ของผู้ดูแลเอง ผู้ใช้ต้องตรวจสอบกฎหมายและนโยบายของผู้ให้บริการก่อนใช้งาน ห้ามนำไปใช้ในทางผิดกฎหมาย
 
@@ -21,7 +21,7 @@ Sereality Panel คือโปรเจกต์ที่นำโค้ดฐ�
 | รายการ | ค่า |
 | --- | --- |
 | ชื่อโปรเจกต์ | Sereality Panel |
-| รุ่นแรกของ Sereality | `v1.0.0` |
+| รุ่นล่าสุดของ Sereality | `v1.0.1` |
 | โค้ดฐาน | 3x-ui `v2.5.5` |
 | แกนการทำงาน | Xray Core |
 | ระบบที่แนะนำ | Linux 64-bit หรือ ARM ที่รองรับ |
@@ -39,7 +39,7 @@ Sereality Panel คือโปรเจกต์ที่นำโค้ดฐ�
 
 ภาพด้านบนเป็นภาพตัวอย่าง UI ของโปรเจกต์ ไฟล์จริงอยู่ที่ [`dashboard-preview.svg`](./dashboard-preview.svg)
 
-## ฟังก์ชันที่มีใน `v1.0.0`
+## ฟังก์ชันที่มีใน `v1.0.1`
 
 ### Dashboard
 
@@ -145,10 +145,10 @@ Inbound รองรับโปรโตคอลต่อไปนี้:
 bash <(curl -Ls https://raw.githubusercontent.com/natthapon07032005/sereality-panel/main/install.sh)
 ```
 
-### ติดตั้งรุ่นแรก `v1.0.0` แบบระบุเวอร์ชัน
+### ติดตั้งรุ่นล่าสุด `v1.0.1` แบบระบุเวอร์ชัน
 
 ```bash
-VERSION=v1.0.0 && bash <(curl -Ls "https://raw.githubusercontent.com/natthapon07032005/sereality-panel/$VERSION/install.sh") $VERSION
+VERSION=v1.0.1 && bash <(curl -Ls "https://raw.githubusercontent.com/natthapon07032005/sereality-panel/$VERSION/install.sh") $VERSION
 ```
 
 หลังติดตั้งเสร็จ ให้ดูข้อมูลเข้าสู่ระบบและ URL ด้วย:

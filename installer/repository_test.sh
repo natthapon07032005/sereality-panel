@@ -36,7 +36,7 @@ test_management_script_points_to_sereality_repository() {
     local got
     got="$(bash "$(dirname "${BASH_SOURCE[0]}")/../x-ui.sh" --print-sereality-config)"
     [[ "$got" == *"https://raw.githubusercontent.com/natthapon07032005/sereality-panel/main/x-ui.sh"* ]]
-    [[ "$got" == *"https://raw.githubusercontent.com/natthapon07032005/sereality-panel/v1.0.0/install.sh"* ]]
+    [[ "$got" == *"https://raw.githubusercontent.com/natthapon07032005/sereality-panel/v1.0.1/install.sh"* ]]
 }
 
 test_release_asset_url_uses_sereality_repository
