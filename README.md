@@ -119,7 +119,6 @@ Inbound รองรับโปรโตคอลต่อไปนี้:
 - ตั้งค่า Timezone และจำนวนรายการต่อหน้า
 - ตั้งค่า Telegram Bot และการแจ้งเตือน
 - ตั้งค่า Subscription service
-- Export และ Restore ฐานข้อมูล
 - สลับ Light/Dark theme
 
 ### เครื่องมือดูแลเซิร์ฟเวอร์
@@ -203,7 +202,7 @@ x-ui settings
 /etc/x-ui/x-ui.db
 ```
 
-สามารถ Backup และ Restore ได้จากหน้าเว็บในส่วนการตั้งค่า โดยไฟล์ Backup เป็นไฟล์ฐานข้อมูล `.db`
+สามารถ Backup และ Restore ได้จากปุ่ม `Backup` บนหน้า Dashboard โดยไฟล์ Backup เป็นไฟล์ฐานข้อมูล `.db`
 
 คำแนะนำก่อน Restore:
 
