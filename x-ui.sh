@@ -6,6 +6,31 @@ blue='\033[0;34m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+SEREALITY_GITHUB_REPOSITORY="natthapon07032005/sereality-panel"
+SEREALITY_GITHUB_REF="main"
+
+sereality_raw_asset_url() {
+    local ref="$1"
+    local asset="$2"
+    printf 'https://raw.githubusercontent.com/%s/%s/%s' \
+        "$SEREALITY_GITHUB_REPOSITORY" "$ref" "$asset"
+}
+
+sereality_normalize_version() {
+    local version="${1#v}"
+    if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        return 1
+    fi
+    printf 'v%s' "$version"
+}
+
+if [[ "${1:-}" == "--print-sereality-config" ]]; then
+    printf '%s\n' \
+        "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')" \
+        "$(sereality_raw_asset_url 'v1.0.0' 'install.sh')"
+    exit 0
+fi
+
 #Add some basic function here
 function LOGD() {
     echo -e "${yellow}[DEG] $* ${plain}"
@@ -148,7 +173,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'install.sh')")
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -167,7 +192,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'install.sh')")
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         before_show_menu
@@ -185,7 +210,7 @@ update_menu() {
         return 0
     fi
 
-    wget -O /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
+    wget -O /usr/bin/x-ui "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
 
@@ -207,7 +232,11 @@ legacy_version() {
         exit 1
     fi
     # Use the entered panel version in the download link
-    install_command="bash <(curl -Ls "https://raw.githubusercontent.com/mhsanaei/3x-ui/v$tag_version/install.sh") v$tag_version"
+    tag_version=$(sereality_normalize_version "$tag_version") || {
+        echo "Please enter a valid version such as 1.0.0."
+        return 1
+    }
+    install_command="bash <(curl -Ls \"$(sereality_raw_asset_url "$tag_version" 'install.sh')\") $tag_version"
 
     echo "Downloading and installing panel version $tag_version..."
     eval $install_command
@@ -238,7 +267,7 @@ uninstall() {
     echo ""
     echo -e "Uninstalled Successfully.\n"
     echo "If you need to install this panel again, you can use below command:"
-    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)${plain}"
+    echo -e "${green}bash <(curl -Ls $(sereality_raw_asset_url \"$SEREALITY_GITHUB_REF\" 'install.sh'))${plain}"
     echo ""
     # Trap the SIGTERM signal
     trap delete_script SIGTERM
@@ -580,7 +609,7 @@ enable_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"

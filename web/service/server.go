@@ -33,6 +33,17 @@ import (
 
 type ProcessState string
 
+const MaxDatabaseImportBytes int64 = 512 * 1024 * 1024
+
+const maxDatabaseImportBytes = MaxDatabaseImportBytes
+
+func validateDatabaseImportSize(size int64) error {
+	if size < 0 || size > maxDatabaseImportBytes {
+		return fmt.Errorf("database import exceeds the %d-byte limit", maxDatabaseImportBytes)
+	}
+	return nil
+}
+
 const (
 	Running ProcessState = "running"
 	Stop    ProcessState = "stop"
@@ -460,19 +471,31 @@ func (s *ServerService) GetConfigJson() (interface{}, error) {
 }
 
 func (s *ServerService) GetDb() ([]byte, error) {
-	// Update by manually trigger a checkpoint operation
-	err := database.Checkpoint()
+	if err := database.Checkpoint(); err != nil {
+		return nil, err
+	}
+	tempFile, err := os.CreateTemp("", "sereality-backup-*.db")
 	if err != nil {
 		return nil, err
 	}
-	// Open the file for reading
-	file, err := os.Open(config.GetDBPath())
+	tempPath := tempFile.Name()
+	if err := tempFile.Close(); err != nil {
+		os.Remove(tempPath)
+		return nil, err
+	}
+	if err := os.Remove(tempPath); err != nil {
+		return nil, err
+	}
+	defer os.Remove(tempPath)
+	if err := database.CreateBackup(config.GetDBPath(), tempPath); err != nil {
+		return nil, err
+	}
+	file, err := os.Open(tempPath)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	// Read the file contents
 	fileContents, err := io.ReadAll(file)
 	if err != nil {
 		return nil, err
@@ -518,58 +541,34 @@ func (s *ServerService) ImportDB(file multipart.File) error {
 	defer os.Remove(tempPath)
 
 	// Save uploaded file to temporary file
-	_, err = io.Copy(tempFile, file)
+	written, err := io.Copy(tempFile, io.LimitReader(file, maxDatabaseImportBytes+1))
 	if err != nil {
 		return common.NewErrorf("Error saving db: %v", err)
 	}
+	if err := validateDatabaseImportSize(written); err != nil {
+		return common.NewErrorf("Error saving db: %v", err)
+	}
 
-	// Check if we can init db or not
-	err = database.InitDB(tempPath)
+	// Validate the candidate without changing the active database connection.
+	err = database.ValidateSQLiteDB(tempPath)
 	if err != nil {
 		return common.NewErrorf("Error checking db: %v", err)
 	}
 
-	// Stop Xray
+	// Stop Xray before replacing the active database. RestoreDatabase creates a
+	// pre-restore backup and activates the candidate through a temporary file.
 	s.StopXrayService()
-
-	// Backup the current database for fallback
-	fallbackPath := fmt.Sprintf("%s.backup", config.GetDBPath())
-	// Remove the existing fallback file (if any)
-	_, err = os.Stat(fallbackPath)
-	if err == nil {
-		errRemove := os.Remove(fallbackPath)
-		if errRemove != nil {
-			return common.NewErrorf("Error removing existing fallback db file: %v", errRemove)
-		}
+	candidate, openErr := os.Open(tempPath)
+	if openErr != nil {
+		return common.NewErrorf("Error opening restore candidate: %v", openErr)
 	}
-	// Move the current database to the fallback location
-	err = os.Rename(config.GetDBPath(), fallbackPath)
+	_, err = database.RestoreSQLite(config.GetDBPath(), candidate)
+	candidate.Close()
 	if err != nil {
-		return common.NewErrorf("Error backing up temporary db file: %v", err)
+		return common.NewErrorf("Error restoring database: %v", err)
 	}
 
-	// Remove the temporary file before returning
-	defer os.Remove(fallbackPath)
-
-	// Move temp to DB path
-	err = os.Rename(tempPath, config.GetDBPath())
-	if err != nil {
-		errRename := os.Rename(fallbackPath, config.GetDBPath())
-		if errRename != nil {
-			return common.NewErrorf("Error moving db file and restoring fallback: %v", errRename)
-		}
-		return common.NewErrorf("Error moving db file: %v", err)
-	}
-
-	// Migrate DB
-	err = database.InitDB(config.GetDBPath())
-	if err != nil {
-		errRename := os.Rename(fallbackPath, config.GetDBPath())
-		if errRename != nil {
-			return common.NewErrorf("Error migrating db and restoring fallback: %v", errRename)
-		}
-		return common.NewErrorf("Error migrating db: %v", err)
-	}
+	// RestoreSQLite reopens and migrates the active database after activation.
 	s.inboundService.MigrateDB()
 
 	// Start Xray

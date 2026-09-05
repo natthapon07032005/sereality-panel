@@ -12,6 +12,7 @@ import (
 	"x-ui/database/model"
 	"x-ui/xray"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -32,6 +33,9 @@ func initModels() error {
 		&model.OutboundTraffics{},
 		&model.Setting{},
 		&model.InboundClientIps{},
+		&model.Package{},
+		&model.Node{},
+		&model.Subscription{},
 		&xray.ClientTraffic{},
 	}
 	for _, model := range models {
@@ -50,14 +54,23 @@ func initUser() error {
 		return err
 	}
 	if empty {
+		hashedPassword, err := defaultPasswordHash()
+		if err != nil {
+			return err
+		}
 		user := &model.User{
 			Username:    defaultUsername,
-			Password:    defaultPassword,
+			Password:    hashedPassword,
 			LoginSecret: defaultSecret,
 		}
 		return db.Create(user).Error
 	}
 	return nil
+}
+
+func defaultPasswordHash() (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
+	return string(hash), err
 }
 
 func isTableEmpty(tableName string) (bool, error) {
@@ -88,11 +101,24 @@ func InitDB(dbPath string) error {
 	if err != nil {
 		return err
 	}
+	if sqlDB, err := db.DB(); err != nil {
+		return err
+	} else {
+		// Keep SQLite on one connection so the connection-scoped FK pragma is
+		// effective for every management operation and restore checkpoint.
+		sqlDB.SetMaxOpenConns(1)
+		if _, err := sqlDB.Exec("PRAGMA foreign_keys = ON"); err != nil {
+			_ = sqlDB.Close()
+			return err
+		}
+	}
 
 	if err := initModels(); err != nil {
+		_ = CloseDB()
 		return err
 	}
 	if err := initUser(); err != nil {
+		_ = CloseDB()
 		return err
 	}
 
@@ -105,7 +131,11 @@ func CloseDB() error {
 		if err != nil {
 			return err
 		}
-		return sqlDB.Close()
+		err = sqlDB.Close()
+		// Keep the closed handle during a restore transition. Callers that race
+		// with the transition receive a database-closed error instead of
+		// dereferencing a nil shared pointer; InitDB replaces it when ready.
+		return err
 	}
 	return nil
 }

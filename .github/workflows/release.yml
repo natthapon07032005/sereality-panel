@@ -1,4 +1,7 @@
-name: Release 3X-UI
+name: Release Sereality Panel
+
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
@@ -126,6 +129,9 @@ jobs:
       - name: Package
         run: tar -zcvf x-ui-linux-${{ matrix.platform }}.tar.gz x-ui
 
+      - name: Generate checksum
+        run: sha256sum x-ui-linux-${{ matrix.platform }}.tar.gz > x-ui-linux-${{ matrix.platform }}.tar.gz.sha256
+
       - name: Upload files to Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -136,7 +142,16 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+          tag: ${{ github.ref_name }}
           file: x-ui-linux-${{ matrix.platform }}.tar.gz
           asset_name: x-ui-linux-${{ matrix.platform }}.tar.gz
-          prerelease: true
+          prerelease: false
+
+      - name: Upload checksum to GH release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          file: x-ui-linux-${{ matrix.platform }}.tar.gz.sha256
+          asset_name: x-ui-linux-${{ matrix.platform }}.tar.gz.sha256
+          prerelease: false

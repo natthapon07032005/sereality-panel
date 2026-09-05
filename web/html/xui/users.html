@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .}}
+<style>
+  #app.sereality-admin { min-height: 100vh; background: radial-gradient(circle at 80% 0%, #681044, transparent 38rem), linear-gradient(135deg, #130713, #09090e); color: #fff; }
+  #app.sereality-admin #content-layout, #app.sereality-admin .ant-layout-content { background: transparent; }
+  .sereality-admin-shell { max-width: 1480px; margin: 0 auto; padding: 24px 16px; }
+  .sereality-admin-card { border: 1px solid rgba(255, 204, 228, .18); border-radius: 20px; background: rgba(29, 14, 29, .78); color: #fff; backdrop-filter: blur(18px); }
+  .sereality-admin-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .sereality-admin-title h1 { margin: 0; color: #fff; font-size: 30px; }
+  .sereality-admin-title p { margin: 5px 0 0; color: #c7b6c4; }
+  .sereality-admin-table .ant-table, .sereality-admin-table .ant-table-thead > tr > th, .sereality-admin-table .ant-table-tbody > tr > td { background: transparent; color: #fff; border-color: rgba(255, 204, 228, .12); }
+  .sereality-admin-table .ant-table-thead > tr > th { color: #ff86be; }
+</style>
+<body>
+  <a-layout id="app" v-cloak class="sereality-admin" :class="themeSwitcher.currentTheme">
+    {{ template "commonSider" . }}
+    <a-layout id="content-layout"><a-layout-content><div class="sereality-admin-shell">
+      <div class="sereality-admin-title"><div><h1>Users</h1><p>ผู้ใช้ในระบบที่แสดงเฉพาะข้อมูลปลอดภัยสำหรับผู้ดูแล</p></div><a-button type="primary" @click="load">Refresh</a-button></div>
+      <a-card class="sereality-admin-card" :bordered="false"><a-table class="sereality-admin-table" :data-source="users" :loading="loading" row-key="id" :pagination="false"><a-table-column title="ID" data-index="id"></a-table-column><a-table-column title="Username" data-index="username"></a-table-column><a-table-column title="Package" key="package"><template slot-scope="user"><a-select size="small" :value="user.packageId || 0" @change="value => assignPackage(user.id, value)" style="min-width:130px"><a-select-option :value="0">None</a-select-option><a-select-option v-for="pkg in packages" :key="pkg.id" :value="pkg.id">[[ pkg.name ]]</a-select-option></a-select></template></a-table-column><a-table-column title="Status" key="status"><template slot-scope="user"><a-select size="small" :value="user.status" @change="value => updateStatus(user.id, value)" style="min-width:110px"><a-select-option value="active">Active</a-select-option><a-select-option value="suspended">Suspended</a-select-option><a-select-option value="expired">Expired</a-select-option></a-select></template></a-table-column><a-table-column title="Credentials" key="credentials"><template><a-tag color="green">Protected</a-tag></template></a-table-column></a-table></a-card>
+    </div></a-layout-content></a-layout>
+  </a-layout>
+{{template "js" .}}
+{{template "component/themeSwitcher" .}}
+<script>
+  new Vue({ delimiters: ['[[', ']]'], el: '#app', data: { siderDrawer, themeSwitcher, users: [], packages: [], loading: false }, methods: {
+    async load() { this.loading = true; const results = await Promise.all([HttpUtil.get('/panel/users'), HttpUtil.get('/panel/packages')]); this.loading = false; if (results[0].success) this.users = results[0].obj || []; if (results[1].success) this.packages = results[1].obj || []; },
+    async assignPackage(id, packageId) { const msg = await HttpUtil.post('/panel/users/' + id + '/package', { packageId }, { headers: { 'Content-Type': 'application/json' } }); if (msg.success) await this.load(); },
+    async updateStatus(id, status) { const msg = await HttpUtil.post('/panel/users/' + id + '/status', { status }, { headers: { 'Content-Type': 'application/json' } }); if (msg.success) await this.load(); },
+  }, mounted() { this.load(); } });
+</script>
+</body></html>

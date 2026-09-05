@@ -13,17 +13,11 @@ import (
 )
 
 func getRemoteIp(c *gin.Context) string {
-	value := c.GetHeader("X-Real-IP")
-	if value != "" {
-		return value
-	}
-	value = c.GetHeader("X-Forwarded-For")
-	if value != "" {
-		ips := strings.Split(value, ",")
-		return ips[0]
-	}
 	addr := c.Request.RemoteAddr
 	ip, _, _ := net.SplitHostPort(addr)
+	if ip == "" {
+		return addr
+	}
 	return ip
 }
 
@@ -46,8 +40,16 @@ func jsonMsgObj(c *gin.Context, msg string, obj interface{}, err error) {
 		}
 	} else {
 		m.Success = false
-		m.Msg = msg + " " + I18nWeb(c, "fail") + ": " + err.Error()
-		logger.Warning(msg+" "+I18nWeb(c, "fail")+": ", err)
+		status := I18nWeb(c, "fail")
+		if status == "" {
+			status = "failed"
+		}
+		label := strings.TrimSpace(msg)
+		if label == "" {
+			label = "request"
+		}
+		m.Msg = label + " " + status
+		logger.Warning(label+" "+status+": ", err)
 	}
 	c.JSON(http.StatusOK, m)
 }

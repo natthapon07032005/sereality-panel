@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"x-ui/util/json_util"
 	"x-ui/xray"
@@ -21,10 +22,14 @@ const (
 )
 
 type User struct {
-	Id          int    `json:"id" gorm:"primaryKey;autoIncrement"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	LoginSecret string `json:"loginSecret"`
+	Id          int       `json:"id" gorm:"primaryKey;autoIncrement"`
+	Username    string    `json:"username"`
+	Password    string    `json:"password"`
+	LoginSecret string    `json:"loginSecret"`
+	PackageID   int       `json:"packageId" gorm:"index"`
+	Status      string    `json:"status" gorm:"default:active"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Inbound struct {

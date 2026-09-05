@@ -1,6 +1,8 @@
 .idea
 .vscode
 .cache
+.gocache-*/
+.solweaver/
 .sync*
 *.tar.gz
 *.log

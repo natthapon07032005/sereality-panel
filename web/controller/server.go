@@ -162,6 +162,15 @@ func isValidFilename(filename string) bool {
 }
 
 func (a *ServerController) importDB(c *gin.Context) {
+	const multipartOverheadAllowance int64 = 1024 * 1024
+	maxBodyBytes := service.MaxDatabaseImportBytes + multipartOverheadAllowance
+	if c.Request.ContentLength > maxBodyBytes {
+		jsonMsg(c, "Error reading db file", fmt.Errorf("database upload exceeds the size limit"))
+		return
+	}
+	// Limit the request before multipart parsing can spool an oversized body
+	// to disk. The service applies the exact file-size limit after extraction.
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxBodyBytes)
 	// Get the file from the request body
 	file, _, err := c.Request.FormFile("db")
 	if err != nil {

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .}}
+<style>
+  #app.sereality-admin { min-height: 100vh; background: radial-gradient(circle at 80% 0%, #681044, transparent 38rem), linear-gradient(135deg, #130713, #09090e); color: #fff; }
+  #app.sereality-admin #content-layout, #app.sereality-admin .ant-layout-content { background: transparent; }
+  .sereality-admin-shell { max-width: 1480px; margin: 0 auto; padding: 24px 16px; }
+  .sereality-admin-card { border: 1px solid rgba(255, 204, 228, .18); border-radius: 20px; background: rgba(29, 14, 29, .78); color: #fff; backdrop-filter: blur(18px); }
+  .sereality-admin-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .sereality-admin-title h1 { margin: 0; color: #fff; font-size: 30px; }
+  .sereality-admin-title p { margin: 5px 0 0; color: #c7b6c4; }
+  .sereality-admin-table .ant-table, .sereality-admin-table .ant-table-thead > tr > th, .sereality-admin-table .ant-table-tbody > tr > td { background: transparent; color: #fff; border-color: rgba(255, 204, 228, .12); }
+  .sereality-admin-table .ant-table-thead > tr > th { color: #ff86be; }
+  .sereality-admin-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 18px; }
+  @media (max-width: 800px) { .sereality-admin-form { grid-template-columns: 1fr; } .sereality-admin-title { align-items: flex-start; flex-direction: column; } }
+</style>
+<body>
+  <a-layout id="app" v-cloak class="sereality-admin" :class="themeSwitcher.currentTheme">
+    {{ template "commonSider" . }}
+    <a-layout id="content-layout"><a-layout-content><div class="sereality-admin-shell">
+      <div class="sereality-admin-title"><div><h1>Subscriptions</h1><p>วงจรสถานะสมาชิกที่ตรวจสอบได้ โดยยังไม่ผูก payment gateway</p></div><a-button type="primary" @click="load">Refresh</a-button></div>
+      <a-card class="sereality-admin-card" :bordered="false"><div class="sereality-admin-form"><a-select v-model="form.userId" placeholder="Select user"><a-select-option v-for="user in users" :key="user.id" :value="user.id">[[ user.username ]]</a-select-option></a-select><a-select v-model="form.packageId" placeholder="Select package" @change="selectPackage"><a-select-option v-for="pkg in enabledPackages" :key="pkg.id" :value="pkg.id">[[ pkg.name ]] ([[ pkg.durationDays ]] days)</a-select-option></a-select><a-button type="primary" :loading="saving" @click="create">Create pending</a-button></div><a-table class="sereality-admin-table" :data-source="subscriptions" :loading="loading" row-key="id" :pagination="false">
+        <a-table-column title="ID" data-index="id"></a-table-column>
+        <a-table-column title="User" data-index="userId"></a-table-column>
+        <a-table-column title="Package" data-index="packageId"></a-table-column>
+        <a-table-column title="Status" key="status"><template slot-scope="status, record"><a-select size="small" :value="status" @change="value => updateStatus(record.id, value)" style="min-width:120px"><a-select-option value="pending">Pending</a-select-option><a-select-option value="active">Active</a-select-option><a-select-option value="expired">Expired</a-select-option><a-select-option value="cancelled">Cancelled</a-select-option></a-select></template></a-table-column>
+        <a-table-column title="Starts" data-index="startsAt"></a-table-column>
+        <a-table-column title="Ends" data-index="endsAt"></a-table-column>
+        <a-table-column title="Actions" key="actions"><template slot-scope="subscription"><span v-if="subscription.status === 'pending'"><a-button size="small" type="primary" @click="updateStatus(subscription.id, 'active')">Activate</a-button><a-button size="small" type="danger" style="margin-left: 8px" @click="cancel(subscription.id)">Cancel</a-button></span><a-button v-else-if="subscription.status === 'active'" size="small" type="danger" @click="cancel(subscription.id)">Cancel</a-button></template></a-table-column>
+      </a-table></a-card>
+    </div></a-layout-content></a-layout>
+  </a-layout>
+{{template "js" .}}
+{{template "component/themeSwitcher" .}}
+<script>
+  new Vue({ delimiters: ['[[', ']]'], el: '#app', data: { siderDrawer, themeSwitcher, subscriptions: [], users: [], packages: [], loading: false, saving: false, form: { userId: undefined, packageId: undefined, durationDays: 0 } }, computed: { enabledPackages() { return this.packages.filter(pkg => pkg.enabled); } }, methods: {
+    async load() { this.loading = true; const results = await Promise.all([HttpUtil.get('/panel/subscriptions'), HttpUtil.get('/panel/users'), HttpUtil.get('/panel/packages')]); this.loading = false; if (results[0].success) this.subscriptions = results[0].obj || []; if (results[1].success) this.users = results[1].obj || []; if (results[2].success) this.packages = results[2].obj || []; },
+    selectPackage(packageId) { const pkg = this.packages.find(item => item.id === packageId); this.form.durationDays = pkg ? pkg.durationDays : 0; },
+    async create() { if (!this.form.userId || !this.form.packageId || !this.form.durationDays) return; this.saving = true; const msg = await HttpUtil.post('/panel/subscriptions', this.form, { headers: { 'Content-Type': 'application/json' } }); this.saving = false; if (msg.success) { this.form = { userId: undefined, packageId: undefined, durationDays: 0 }; await this.load(); } },
+    async updateStatus(id, status) { const msg = await HttpUtil.post('/panel/subscriptions/' + id + '/status', { status }, { headers: { 'Content-Type': 'application/json' } }); if (msg.success) await this.load(); },
+    cancel(id) { this.$confirm({ title: 'Cancel subscription?', content: 'This changes the subscription lifecycle status.', class: themeSwitcher.currentTheme, okText: 'Cancel subscription', cancelText: 'Keep', onOk: () => this.updateStatus(id, 'cancelled') }); },
+  }, mounted() { this.load(); } });
+</script>
+</body></html>

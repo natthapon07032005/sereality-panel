@@ -5,7 +5,7 @@ axios.interceptors.request.use(
     (config) => {
         if (config.data instanceof FormData) {
             config.headers['Content-Type'] = 'multipart/form-data';
-        } else {
+        } else if (!isJsonRequest(config)) {
             config.data = Qs.stringify(config.data, {
                 arrayFormat: 'repeat',
             });
@@ -14,6 +14,18 @@ axios.interceptors.request.use(
     },
     (error) => Promise.reject(error),
 );
+
+function isJsonRequest(config) {
+    const headers = config.headers;
+    if (!headers) {
+        return false;
+    }
+    const contentType = typeof headers.get === 'function'
+        ? headers.get('Content-Type')
+        : headers['Content-Type'] || headers['content-type'];
+    return typeof contentType === 'string'
+        && contentType.split(';', 1)[0].trim().toLowerCase() === 'application/json';
+}
 
 axios.interceptors.response.use(
     (response) => response,

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860">
+  <rect width="1400" height="860" fill="#0b0b0f"/>
+  <rect x="0" y="0" width="236" height="860" fill="#111116"/>
+  <line x1="236" y1="0" x2="236" y2="860" stroke="#2e2e3a"/>
+  <text x="34" y="54" fill="#ffffff" font-family="Segoe UI,Arial" font-size="24" font-weight="700">Sereality <tspan fill="#ff5fa2">Panel</tspan></text>
+  <g font-family="Segoe UI,Arial" font-size="16">
+    <rect x="20" y="100" width="196" height="46" rx="8" fill="#2a1520"/><text x="42" y="130" fill="#ffffff">▣  Overview</text>
+    <text x="42" y="187" fill="#a7a7b5">◈  Inbounds</text><text x="42" y="237" fill="#a7a7b5">♙  Users</text>
+    <text x="42" y="287" fill="#a7a7b5">▤  Packages</text><text x="42" y="337" fill="#a7a7b5">⚙  Settings</text>
+  </g>
+  <g font-family="Segoe UI,Arial">
+    <text x="282" y="62" fill="#ffffff" font-size="32" font-weight="700">Overview</text>
+    <text x="282" y="91" fill="#a7a7b5" font-size="15">ข้อมูลจาก Server Status, Inbounds และ Client Traffic ของระบบเดิม</text>
+    <text x="1090" y="62" fill="#a7a7b5" font-size="14">อัปเดตล่าสุด 12 วินาทีที่แล้ว</text>
+    <rect x="1252" y="38" width="100" height="40" rx="8" fill="#17171e" stroke="#2e2e3a"/><text x="1274" y="64" fill="#ffffff" font-size="15">Refresh</text>
+  </g>
+  <g font-family="Segoe UI,Arial">
+    <g><rect x="282" y="124" width="254" height="126" rx="12" fill="#17171e" stroke="#2e2e3a"/><text x="302" y="153" fill="#a7a7b5" font-size="14">Xray status</text><circle cx="310" cy="194" r="6" fill="#ff5fa2"/><text x="326" y="202" fill="#ffffff" font-size="27" font-weight="700">Running</text><text x="302" y="229" fill="#a7a7b5" font-size="13">version 1.8.x</text></g>
+    <g><rect x="550" y="124" width="254" height="126" rx="12" fill="#17171e" stroke="#2e2e3a"/><text x="570" y="153" fill="#a7a7b5" font-size="14">Active clients</text><text x="570" y="202" fill="#ffffff" font-size="32" font-weight="700">24</text><text x="570" y="229" fill="#a7a7b5" font-size="13">จาก online users</text></g>
+    <g><rect x="818" y="124" width="254" height="126" rx="12" fill="#17171e" stroke="#2e2e3a"/><text x="838" y="153" fill="#a7a7b5" font-size="14">Traffic today</text><text x="838" y="202" fill="#ffffff" font-size="32" font-weight="700">86.4 GB</text><text x="838" y="229" fill="#a7a7b5" font-size="13">Upload + Download</text></g>
+    <g><rect x="1086" y="124" width="266" height="126" rx="12" fill="#151d28" stroke="#293747"/><text x="1106" y="153" fill="#91a2b5" font-size="14">Expiring soon</text><text x="1106" y="202" fill="#f6b35b" font-size="32" font-weight="700">7</text><text x="1106" y="229" fill="#91a2b5" font-size="13">ภายใน 7 วัน</text></g>
+    <rect x="282" y="268" width="652" height="278" rx="12" fill="#151d28" stroke="#293747"/><text x="306" y="302" fill="#edf4fa" font-size="17" font-weight="600">Traffic overview</text><text x="750" y="302" fill="#91a2b5" font-size="13">จาก client traffic</text>
+    <line x1="322" y1="490" x2="900" y2="490" stroke="#293747"/><line x1="322" y1="330" x2="322" y2="490" stroke="#293747"/>
+    <polyline points="328,455 420,430 515,462 610,390 705,410 800,354 894,375" fill="none" stroke="#6ea8fe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="328,480 420,462 515,442 610,450 705,378 800,410 894,350" fill="none" stroke="#36d399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#91a2b5" font-size="12"><text x="322" y="515">Mon</text><text x="416" y="515">Tue</text><text x="510" y="515">Wed</text><text x="605" y="515">Thu</text><text x="700" y="515">Fri</text><text x="795" y="515">Sat</text><text x="875" y="515">Sun</text></g>
+    <circle cx="326" cy="530" r="5" fill="#6ea8fe"/><text x="339" y="535" fill="#91a2b5" font-size="13">Upload</text><circle cx="420" cy="530" r="5" fill="#36d399"/><text x="433" y="535" fill="#91a2b5" font-size="13">Download</text>
+    <rect x="950" y="268" width="402" height="278" rx="12" fill="#151d28" stroke="#293747"/><text x="974" y="302" fill="#edf4fa" font-size="17" font-weight="600">Server health</text><text x="1260" y="302" fill="#36d399" font-size="14">Healthy</text>
+    <g font-size="14"><text x="974" y="348" fill="#edf4fa">CPU</text><text x="1285" y="348" fill="#edf4fa">34%</text><rect x="974" y="360" width="354" height="8" rx="4" fill="#263342"/><rect x="974" y="360" width="120" height="8" rx="4" fill="#36d399"/><text x="974" y="406" fill="#edf4fa">Memory</text><text x="1285" y="406" fill="#edf4fa">61%</text><rect x="974" y="418" width="354" height="8" rx="4" fill="#263342"/><rect x="974" y="418" width="216" height="8" rx="4" fill="#f6b35b"/><text x="974" y="464" fill="#edf4fa">Disk</text><text x="1285" y="464" fill="#edf4fa">42%</text><rect x="974" y="476" width="354" height="8" rx="4" fill="#263342"/><rect x="974" y="476" width="149" height="8" rx="4" fill="#36d399"/><text x="974" y="522" fill="#edf4fa">TCP / UDP</text><text x="1275" y="522" fill="#edf4fa">18 / 6</text></g>
+    <rect x="282" y="564" width="1070" height="248" rx="12" fill="#151d28" stroke="#293747"/><text x="306" y="599" fill="#edf4fa" font-size="17" font-weight="600">Inbound summary</text><text x="1190" y="599" fill="#91a2b5" font-size="13">ข้อมูลจาก inbounds list</text>
+    <g font-size="12" fill="#91a2b5"><text x="306" y="638">INBOUND</text><text x="590" y="638">PROTOCOL</text><text x="770" y="638">CLIENTS</text><text x="930" y="638">TRAFFIC</text><text x="1110" y="638">STATUS</text></g>
+    <g font-size="14"><line x1="282" y1="653" x2="1352" y2="653" stroke="#293747"/><text x="306" y="686" fill="#edf4fa">VLESS-REALITY</text><text x="590" y="686" fill="#edf4fa">VLESS</text><text x="770" y="686" fill="#edf4fa">12</text><text x="930" y="686" fill="#edf4fa">48.2 GB</text><text x="1110" y="686" fill="#36d399">Enabled</text><line x1="282" y1="704" x2="1352" y2="704" stroke="#293747"/><text x="306" y="737" fill="#edf4fa">VMess-WebSocket</text><text x="590" y="737" fill="#edf4fa">VMess</text><text x="770" y="737" fill="#edf4fa">8</text><text x="930" y="737" fill="#edf4fa">27.9 GB</text><text x="1110" y="737" fill="#36d399">Enabled</text><line x1="282" y1="755" x2="1352" y2="755" stroke="#293747"/><text x="306" y="788" fill="#edf4fa">Trojan-TLS</text><text x="590" y="788" fill="#edf4fa">Trojan</text><text x="770" y="788" fill="#edf4fa">4</text><text x="930" y="788" fill="#edf4fa">10.3 GB</text><text x="1110" y="788" fill="#f6b35b">Needs review</text></g>
+  </g>
+</svg>

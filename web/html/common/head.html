@@ -11,6 +11,24 @@
     [v-cloak] {
       display: none;
     }
+    .panel-brand {
+      overflow: hidden;
+      padding: 14px 8px 10px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .ant-layout-sider-collapsed .panel-brand {
+      padding: 14px 0 10px;
+      font-size: 0;
+    }
+    .ant-layout-sider-collapsed .panel-brand::after {
+      content: "SP";
+      font-size: 16px;
+    }
     /* vazirmatn-regular - arabic_latin_latin-ext */
     @font-face {
       font-display: swap;
@@ -25,8 +43,65 @@
         'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol';
     }
+    #app.sereality-dashboard,
+    #app.sereality-dashboard #content-layout,
+    #app.sereality-dashboard .ant-layout-content {
+      background: #0b0b0f;
+      color: #ffffff;
+    }
+    #app.sereality-dashboard .ant-layout-sider,
+    #app.sereality-dashboard .ant-drawer-content {
+      background: #111116;
+    }
+    #app.sereality-dashboard .ant-card,
+    #app.sereality-dashboard .ant-modal-content,
+    #app.sereality-dashboard .ant-list,
+    #app.sereality-dashboard .ant-popover-inner {
+      background: #17171e;
+      border-color: #2e2e3a;
+      color: #ffffff;
+    }
+    #app.sereality-dashboard .ant-card-head,
+    #app.sereality-dashboard .ant-card-bordered,
+    #app.sereality-dashboard .ant-list-bordered {
+      border-color: #2e2e3a;
+    }
+    #app.sereality-dashboard .ant-card:hover {
+      border-color: #ff4f9a;
+      box-shadow: 0 8px 24px rgba(255, 79, 154, 0.12);
+    }
+    #app.sereality-dashboard .ant-menu-item-selected,
+    #app.sereality-dashboard .ant-menu-item:hover {
+      background: rgba(255, 79, 154, 0.16);
+      color: #ff8fbd;
+    }
+    #app.sereality-dashboard .ant-menu-item-selected::after {
+      border-right-color: #ff4f9a;
+    }
+    #app.sereality-dashboard .ant-btn-primary,
+    #app.sereality-dashboard .ant-tag-purple,
+    #app.sereality-dashboard .ant-tag-green {
+      background: #ff4f9a;
+      border-color: #ff4f9a;
+      color: #0b0b0f;
+    }
+    #app.sereality-dashboard .ant-progress-bg {
+      background: #ff4f9a;
+    }
+    #app.sereality-dashboard .ant-progress-circle-trail {
+      stroke: #343441;
+    }
+    #app.sereality-dashboard .panel-brand,
+    #app.sereality-dashboard .sereality-accent {
+      color: #ff8fbd;
+    }
+    #app.sereality-dashboard .ant-alert-error {
+      background: #27151e;
+      border-color: #ff4f9a;
+      color: #ffffff;
+    }
   </style>
-  <title>{{ .host }}-{{ i18n .title}}</title>
+  <title>{{ .host }} - Sereality Panel - {{ i18n .title}}</title>
 </head>
 <div id="message"></div>
 {{end}}

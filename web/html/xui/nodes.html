@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .}}
+<style>
+  #app.sereality-admin { min-height: 100vh; background: radial-gradient(circle at 80% 0%, #681044, transparent 38rem), linear-gradient(135deg, #130713, #09090e); color: #fff; }
+  #app.sereality-admin #content-layout, #app.sereality-admin .ant-layout-content { background: transparent; }
+  .sereality-admin-shell { max-width: 1480px; margin: 0 auto; padding: 24px 16px; }
+  .sereality-admin-card { border: 1px solid rgba(255, 204, 228, .18); border-radius: 20px; background: rgba(29, 14, 29, .78); color: #fff; backdrop-filter: blur(18px); }
+  .sereality-admin-title { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .sereality-admin-title h1 { margin: 0; color: #fff; font-size: 30px; }
+  .sereality-admin-title p { margin: 5px 0 0; color: #c7b6c4; }
+  .sereality-admin-table .ant-table, .sereality-admin-table .ant-table-thead > tr > th, .sereality-admin-table .ant-table-tbody > tr > td { background: transparent; color: #fff; border-color: rgba(255, 204, 228, .12); }
+  .sereality-admin-table .ant-table-thead > tr > th { color: #ff86be; }
+  .sereality-admin-form { display: grid; grid-template-columns: 1fr 2fr 2fr auto auto auto; gap: 10px; margin-bottom: 18px; }
+  @media (max-width: 800px) { .sereality-admin-form { grid-template-columns: 1fr; } .sereality-admin-title { align-items: flex-start; flex-direction: column; } }
+</style>
+<body>
+  <a-layout id="app" v-cloak class="sereality-admin" :class="themeSwitcher.currentTheme">
+    {{ template "commonSider" . }}
+    <a-layout id="content-layout"><a-layout-content><div class="sereality-admin-shell">
+      <div class="sereality-admin-title"><div><h1>Nodes</h1><p>จัดการ node ที่อนุญาตผ่าน HTTPS และเก็บเฉพาะ token hash</p></div><a-button type="primary" @click="load">Refresh</a-button></div>
+      <a-card class="sereality-admin-card" :bordered="false"><div class="sereality-admin-form">
+        <a-input v-model.trim="form.name" placeholder="Node name"></a-input><a-input v-model.trim="form.baseUrl" placeholder="https://node.example.com/panel"></a-input><a-input-password v-model="form.apiToken" placeholder="API token (never displayed again)"></a-input-password><a-switch v-model="form.enabled"></a-switch><a-button type="primary" :loading="saving" @click="save">[[ editingId ? 'Update' : 'Add node' ]]</a-button><a-button v-if="editingId" @click="cancelEdit">Cancel</a-button>
+      </div><a-table class="sereality-admin-table" :data-source="nodes" :loading="loading" row-key="id" :pagination="false"><a-table-column title="Name" data-index="name"></a-table-column><a-table-column title="Base URL" data-index="baseUrl"></a-table-column><a-table-column title="Enabled" data-index="enabled"><template slot-scope="v"><a-tag :color="v ? 'green' : 'default'">[[ v ? 'Enabled' : 'Disabled' ]]</a-tag></template></a-table-column><a-table-column title="Health" data-index="lastHealthStatus"><template slot-scope="v">[[ v || 'Unknown' ]]</template></a-table-column><a-table-column title="Actions" key="actions"><template slot-scope="record"><a-button size="small" @click="edit(record)">Edit</a-button><a-popconfirm title="Delete this node?" @confirm="remove(record.id)" ok-type="danger"><a-button size="small" type="danger">Delete</a-button></a-popconfirm></template></a-table-column></a-table></a-card>
+    </div></a-layout-content></a-layout>
+  </a-layout>
+{{template "js" .}}
+{{template "component/themeSwitcher" .}}
+<script>
+  new Vue({ delimiters: ['[[', ']]'], el: '#app', data: { siderDrawer, themeSwitcher, nodes: [], loading: false, saving: false, editingId: null, form: { name: '', baseUrl: '', apiToken: '', enabled: true } }, methods: {
+    async load() { this.loading = true; const msg = await HttpUtil.get('/panel/nodes'); this.loading = false; if (msg.success) this.nodes = msg.obj || []; },
+    edit(node) { this.editingId = node.id; this.form = { name: node.name || '', baseUrl: node.baseUrl || '', apiToken: '', enabled: node.enabled !== false }; },
+    cancelEdit() { this.editingId = null; this.form = { name: '', baseUrl: '', apiToken: '', enabled: true }; },
+    async save() { this.saving = true; const options = { headers: { 'Content-Type': 'application/json' } }; const msg = this.editingId ? await HttpUtil.put('/panel/nodes/' + this.editingId, this.form, options) : await HttpUtil.post('/panel/nodes', this.form, options); this.saving = false; if (msg.success) { this.cancelEdit(); await this.load(); } },
+    async remove(id) { const msg = await HttpUtil.delete('/panel/nodes/' + id); if (msg.success) { if (this.editingId === id) this.cancelEdit(); await this.load(); } },
+  }, mounted() { this.load(); } });
+</script>
+</body></html>

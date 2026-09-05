@@ -7,12 +7,46 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 cur_dir=$(pwd)
+SEREALITY_GITHUB_REPOSITORY="natthapon07032005/sereality-panel"
+SEREALITY_GITHUB_REF="main"
+
+sereality_release_asset_url() {
+    local version="$1"
+    local platform="$2"
+    printf 'https://github.com/%s/releases/download/%s/x-ui-linux-%s.tar.gz' \
+        "$SEREALITY_GITHUB_REPOSITORY" "$version" "$platform"
+}
+
+sereality_release_checksum_url() {
+    local version="$1"
+    local platform="$2"
+    printf 'https://github.com/%s/releases/download/%s/x-ui-linux-%s.tar.gz.sha256' \
+        "$SEREALITY_GITHUB_REPOSITORY" "$version" "$platform"
+}
+
+sereality_raw_asset_url() {
+    local asset="$1"
+    printf 'https://raw.githubusercontent.com/%s/%s/%s' \
+        "$SEREALITY_GITHUB_REPOSITORY" "$SEREALITY_GITHUB_REF" "$asset"
+}
+
+sereality_normalize_version() {
+    local version="${1#v}"
+    if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        return 1
+    fi
+    printf 'v%s' "$version"
+}
 
 # check root
-[[ $EUID -ne 0 ]] && echo -e "${red}Fatal error: ${plain} Please run this script with root privilege \n " && exit 1
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
+    [[ $EUID -ne 0 ]] && echo -e "${red}Fatal error: ${plain} Please run this script with root privilege \n " && exit 1
+fi
 
 # Check OS and set release variable
-if [[ -f /etc/os-release ]]; then
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" == "1" ]]; then
+    release="test"
+elif [[ -f /etc/os-release ]]; then
     source /etc/os-release
     release=$ID
 elif [[ -f /usr/lib/os-release ]]; then
@@ -22,7 +56,9 @@ else
     echo "Failed to check the system OS, please contact the author!" >&2
     exit 1
 fi
-echo "The OS release is: $release"
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
+    echo "The OS release is: $release"
+fi
 
 arch() {
     case "$(uname -m)" in
@@ -37,12 +73,16 @@ arch() {
     esac
 }
 
-echo "arch: $(arch)"
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
+    echo "arch: $(arch)"
+fi
 
 os_version=""
-os_version=$(grep "^VERSION_ID" /etc/os-release | cut -d '=' -f2 | tr -d '"' | tr -d '.')
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
+    os_version=$(grep "^VERSION_ID" /etc/os-release | cut -d '=' -f2 | tr -d '"' | tr -d '.')
+fi
 
-if [[ "${release}" == "arch" ]]; then
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" && "${release}" == "arch" ]]; then
     echo "Your OS is Arch Linux"
 elif [[ "${release}" == "parch" ]]; then
     echo "Your OS is Parch Linux"
@@ -94,7 +134,7 @@ elif [[ "${release}" == "virtuozzo" ]]; then
     if [[ ${os_version} -lt 8 ]]; then
         echo -e "${red} Please use Virtuozzo Linux 8 or higher ${plain}\n" && exit 1
     fi
-else
+elif [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
     echo -e "${red}Your operating system is not supported by this script.${plain}\n"
     echo "Please ensure you are using one of the following supported operating systems:"
     echo "- Ubuntu 20.04+"
@@ -208,30 +248,35 @@ install_x-ui() {
     cd /usr/local/
 
     if [ $# == 0 ]; then
-        tag_version=$(curl -Ls "https://api.github.com/repos/MHSanaei/3x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        tag_version=$(curl -Ls "https://api.github.com/repos/${SEREALITY_GITHUB_REPOSITORY}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$tag_version" ]]; then
             echo -e "${red}Failed to fetch x-ui version, it may be due to GitHub API restrictions, please try it later${plain}"
             exit 1
         fi
         echo -e "Got x-ui latest version: ${tag_version}, beginning the installation..."
-        wget -N -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz
+        asset_path="/usr/local/x-ui-linux-$(arch).tar.gz"
+        checksum_path="${asset_path}.sha256"
+        wget -N -O "${asset_path}" "$(sereality_release_asset_url "${tag_version}" "$(arch)")"
+        wget -N -O "${checksum_path}" "$(sereality_release_checksum_url "${tag_version}" "$(arch)")"
+        (cd /usr/local && sha256sum -c "$(basename "${checksum_path}")")
         if [[ $? -ne 0 ]]; then
             echo -e "${red}Downloading x-ui failed, please be sure that your server can access GitHub ${plain}"
             exit 1
         fi
     else
-        tag_version=$1
-        tag_version_numeric=${tag_version#v}
-        min_version="2.3.5"
-
-        if [[ "$(printf '%s\n' "$min_version" "$tag_version_numeric" | sort -V | head -n1)" != "$min_version" ]]; then
-            echo -e "${red}Please use a newer version (at least v2.3.5). Exiting installation.${plain}"
+        tag_version=$(sereality_normalize_version "$1")
+        if [[ $? -ne 0 ]]; then
+            echo -e "${red}Please use a valid Sereality Panel version such as v1.0.0. Exiting installation.${plain}"
             exit 1
         fi
 
-        url="https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz"
+        url="$(sereality_release_asset_url "${tag_version}" "$(arch)")"
         echo -e "Beginning to install x-ui $1"
-        wget -N -O /usr/local/x-ui-linux-$(arch).tar.gz ${url}
+        asset_path="/usr/local/x-ui-linux-$(arch).tar.gz"
+        checksum_path="${asset_path}.sha256"
+        wget -N -O "${asset_path}" "${url}"
+        wget -N -O "${checksum_path}" "$(sereality_release_checksum_url "${tag_version}" "$(arch)")"
+        (cd /usr/local && sha256sum -c "$(basename "${checksum_path}")")
         if [[ $? -ne 0 ]]; then
             echo -e "${red}Download x-ui $1 failed, please check if the version exists ${plain}"
             exit 1
@@ -256,7 +301,7 @@ install_x-ui() {
 
     chmod +x x-ui bin/xray-linux-$(arch)
     cp -f x-ui.service /etc/systemd/system/
-    wget -O /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
+    wget -O /usr/bin/x-ui "$(sereality_raw_asset_url 'x-ui.sh')"
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
     config_after_install
@@ -286,6 +331,8 @@ install_x-ui() {
 └───────────────────────────────────────────────────────┘"
 }
 
-echo -e "${green}Running...${plain}"
-install_base
-install_x-ui $1
+if [[ "${SEREALITY_INSTALLER_TEST:-0}" != "1" ]]; then
+    echo -e "${green}Running...${plain}"
+    install_base
+    install_x-ui "$1"
+fi

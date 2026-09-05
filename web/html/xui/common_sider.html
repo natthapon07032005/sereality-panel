@@ -11,6 +11,22 @@
     <b>{{ i18n "menu.inbounds"}}</b>
   </span>
 </a-menu-item>
+<a-menu-item key="{{ .base_path }}panel/package-manager">
+  <a-icon type="appstore"></a-icon>
+  <span><b>Packages</b></span>
+</a-menu-item>
+<a-menu-item key="{{ .base_path }}panel/user-manager">
+  <a-icon type="team"></a-icon>
+  <span><b>Users</b></span>
+</a-menu-item>
+<a-menu-item key="{{ .base_path }}panel/subscription-manager">
+  <a-icon type="credit-card"></a-icon>
+  <span><b>Subscriptions</b></span>
+</a-menu-item>
+<a-menu-item key="{{ .base_path }}panel/node-manager">
+  <a-icon type="cloud-server"></a-icon>
+  <span><b>Nodes</b></span>
+</a-menu-item>
 <a-menu-item key="{{ .base_path }}panel/settings">
   <a-icon type="setting"></a-icon>
   <span>
@@ -34,6 +50,7 @@
 
 {{define "commonSider"}}
 <a-layout-sider :theme="themeSwitcher.currentTheme" id="sider" collapsible breakpoint="md">
+  <div class="panel-brand" aria-label="Sereality Panel">Sereality Panel</div>
   <a-theme-switch></a-theme-switch>
   <a-menu :theme="themeSwitcher.currentTheme" mode="inline" :selected-keys="['{{ .request_uri }}']" @click="({key}) => key.startsWith('http') ? window.open(key) : location.href = key">
     {{template "menuItems" .}}

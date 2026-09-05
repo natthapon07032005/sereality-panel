@@ -2,7 +2,9 @@ package session
 
 import (
 	"encoding/gob"
+	"net/http"
 
+	"x-ui/database"
 	"x-ui/database/model"
 
 	"github.com/gin-contrib/sessions"
@@ -22,8 +24,12 @@ func SetLoginUser(c *gin.Context, user *model.User) {
 	if user == nil {
 		return
 	}
+	// Never serialize the password hash or login secret into the client-side cookie.
+	safeUser := *user
+	safeUser.Password = ""
+	safeUser.LoginSecret = ""
 	s := sessions.Default(c)
-	s.Set(loginUserKey, *user)
+	s.Set(loginUserKey, safeUser)
 }
 
 func SetMaxAge(c *gin.Context, maxAge int) {
@@ -32,6 +38,8 @@ func SetMaxAge(c *gin.Context, maxAge int) {
 		Path:     defaultPath,
 		MaxAge:   maxAge,
 		HttpOnly: true,
+		Secure:   c.Request.TLS != nil,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
 
@@ -51,7 +59,25 @@ func GetLoginUser(c *gin.Context) *model.User {
 }
 
 func IsLogin(c *gin.Context) bool {
-	return GetLoginUser(c) != nil
+	user := GetLoginUser(c)
+	if user == nil || !isActiveUserStatus(user.Status) {
+		return false
+	}
+
+	// Re-read status so a suspension or expiry invalidates existing sessions.
+	db := database.GetDB()
+	if db == nil || user.Id <= 0 {
+		return false
+	}
+	current := &model.User{}
+	if err := db.Select("status").First(current, user.Id).Error; err != nil {
+		return false
+	}
+	return isActiveUserStatus(current.Status)
+}
+
+func isActiveUserStatus(status string) bool {
+	return status == "" || status == "active"
 }
 
 func ClearSession(c *gin.Context) {
@@ -61,5 +87,7 @@ func ClearSession(c *gin.Context) {
 		Path:     defaultPath,
 		MaxAge:   -1,
 		HttpOnly: true,
+		Secure:   c.Request.TLS != nil,
+		SameSite: http.SameSiteLaxMode,
 	})
 }

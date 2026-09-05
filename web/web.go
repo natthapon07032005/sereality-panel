@@ -157,6 +157,7 @@ func (s *Server) initRouter() (*gin.Engine, error) {
 	}
 
 	engine := gin.Default()
+	engine.Use(middleware.SecurityHeadersMiddleware())
 
 	webDomain, err := s.settingService.GetWebDomain()
 	if err != nil {
@@ -237,6 +238,18 @@ func (s *Server) initRouter() (*gin.Engine, error) {
 }
 
 func (s *Server) startTask() {
+	subscriptionService := service.SubscriptionService{}
+	s.cron.AddFunc("@every 1m", func() {
+		defer func() {
+			if recovered := recover(); recovered != nil {
+				logger.Warning("expire due subscriptions recovered from database transition:", recovered)
+			}
+		}()
+		if err := subscriptionService.ExpireDue(time.Now().UTC()); err != nil {
+			logger.Warning("expire due subscriptions failed:", err)
+		}
+	})
+
 	err := s.xrayService.RestartXray(true)
 	if err != nil {
 		logger.Warning("start xray failed:", err)

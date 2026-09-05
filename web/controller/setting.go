@@ -84,7 +84,7 @@ func (a *SettingController) updateUser(c *gin.Context) {
 		return
 	}
 	user := session.GetLoginUser(c)
-	if user.Username != form.OldUsername || user.Password != form.OldPassword {
+	if user == nil || user.Username != form.OldUsername || !a.userService.CheckUserPassword(user.Id, form.OldPassword) {
 		jsonMsg(c, I18nWeb(c, "pages.settings.toasts.modifyUser"), errors.New(I18nWeb(c, "pages.settings.toasts.originalUserPassIncorrect")))
 		return
 	}
