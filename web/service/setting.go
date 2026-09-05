@@ -48,6 +48,10 @@ var defaultValueMap = map[string]string{
 	"tgBotLoginNotify":            "true",
 	"tgCpu":                       "80",
 	"tgLang":                      "en-US",
+	"backupEnable":                "false",
+	"backupIntervalHours":         "24",
+	"backupRetention":             "7",
+	"backupDirectory":             "backups",
 	"secretEnable":                "false",
 	"subEnable":                   "false",
 	"subListen":                   "",
@@ -315,6 +319,31 @@ func (s *SettingService) GetTgCpu() (int, error) {
 
 func (s *SettingService) GetTgLang() (string, error) {
 	return s.getString("tgLang")
+}
+
+func (s *SettingService) GetAutomaticBackupConfig() (AutomaticBackupConfig, error) {
+	enabled, err := s.getBool("backupEnable")
+	if err != nil {
+		return AutomaticBackupConfig{}, err
+	}
+	interval, err := s.getInt("backupIntervalHours")
+	if err != nil {
+		return AutomaticBackupConfig{}, err
+	}
+	retention, err := s.getInt("backupRetention")
+	if err != nil {
+		return AutomaticBackupConfig{}, err
+	}
+	directory, err := s.getString("backupDirectory")
+	if err != nil {
+		return AutomaticBackupConfig{}, err
+	}
+	return NormalizeAutomaticBackupConfig(AutomaticBackupConfig{
+		Enabled:       enabled,
+		IntervalHours: interval,
+		Retention:     retention,
+		Directory:     directory,
+	}), nil
 }
 
 func (s *SettingService) GetPort() (int, error) {

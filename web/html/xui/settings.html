@@ -175,17 +175,31 @@
                       </template>
                     </a-setting-list-item>
                     <a-setting-list-item paddings="small">
+                      <template #title>{{ i18n "sereality.autoBackup" }}</template>
+                      <template #description>{{ i18n "sereality.autoBackupDesc" }}</template>
+                      <template #control><a-switch v-model="allSetting.backupEnable"></a-switch></template>
+                    </a-setting-list-item>
+                    <a-setting-list-item v-if="allSetting.backupEnable" paddings="small">
+                      <template #title>{{ i18n "sereality.backupInterval" }}</template>
+                      <template #control><a-input-number :min="1" :max="168" v-model="allSetting.backupIntervalHours" style="width: 100%;"></a-input-number></template>
+                    </a-setting-list-item>
+                    <a-setting-list-item v-if="allSetting.backupEnable" paddings="small">
+                      <template #title>{{ i18n "sereality.backupRetention" }}</template>
+                      <template #control><a-input-number :min="1" :max="30" v-model="allSetting.backupRetention" style="width: 100%;"></a-input-number></template>
+                    </a-setting-list-item>
+                    <a-setting-list-item v-if="allSetting.backupEnable" paddings="small">
+                      <template #title>{{ i18n "sereality.backupDirectory" }}</template>
+                      <template #description>{{ i18n "sereality.backupDirectoryDesc" }}</template>
+                      <template #control><a-input v-model.trim="allSetting.backupDirectory"></a-input></template>
+                    </a-setting-list-item>
+                    <a-setting-list-item paddings="small">
                       <template #title>{{ i18n "pages.settings.language"}}</template>
                       <template #control>
-                        <a-select ref="selectLang"
-                            v-model="lang"
-                            @change="LanguageManager.setLanguage(lang)"
-                            :dropdown-class-name="themeSwitcher.currentTheme"
-                            style="width: 100%">
-                          <a-select-option :value="l.value" :label="l.value" v-for="l in LanguageManager.supportedLanguages">
-                            <span role="img" :aria-label="l.name" v-text="l.icon"></span> &nbsp;&nbsp; <span v-text="l.name"></span>
-                          </a-select-option>
-                        </a-select>
+                        <a-switch :checked="lang === 'th-TH'"
+                            checked-children="ไทย"
+                            un-checked-children="EN"
+                            @change="LanguageManager.setLanguage($event ? 'th-TH' : 'en-US')">
+                        </a-switch>
                       </template>
                     </a-setting-list-item>
                   </a-collapse-panel>

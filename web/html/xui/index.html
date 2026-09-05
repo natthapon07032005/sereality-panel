@@ -668,7 +668,7 @@
                 <div class="sereality-brand-mark">S</div>
                 <div class="sereality-brand-copy"><span>SEREALITY X</span><strong>Sereality Panel</strong></div>
               </div>
-              <div class="sereality-dashboard-context"><span class="is-active">Dashboard</span><span class="sereality-context-secondary">Inbounds</span><span class="sereality-context-secondary">Users</span><span class="sereality-context-secondary">Packages</span></div>
+              <div class="sereality-dashboard-context"><span class="is-active">{{ i18n "sereality.dashboard" }}</span><span class="sereality-context-secondary">{{ i18n "menu.inbounds" }}</span><span class="sereality-context-secondary">{{ i18n "menu.users" }}</span><span class="sereality-context-secondary">{{ i18n "menu.packages" }}</span></div>
               <div class="sereality-topbar-status"><span class="sereality-status-dot" :class="{ running: status.xray.state === State.Running, error: status.xray.state === State.Error }"></span>[[ status.xray.state ]]</div>
             </div>
             <div class="sereality-dashboard-hero">
@@ -679,13 +679,13 @@
               </div>
               <div class="sereality-hero-aside">
                 <div class="sereality-hero-status"><span class="sereality-status-dot" :class="{ running: status.xray.state === State.Running, error: status.xray.state === State.Error }"></span><div class="sereality-hero-status-copy"><span>Xray service</span><strong>[[ status.xray.state ]]</strong></div><span class="sereality-hero-status-version">v[[ status.xray.version ]]</span></div>
-                <div class="sereality-quick-actions"><a-button class="sereality-quick-action sereality-action-primary" @click="openBackup"><a-icon type="cloud-download"></a-icon> Backup</a-button><a-button class="sereality-quick-action" @click="openLogs"><a-icon type="file-text"></a-icon> Logs</a-button><a-button class="sereality-quick-action" @click="openConfig"><a-icon type="setting"></a-icon> Config</a-button></div>
+                <div class="sereality-quick-actions"><a-button class="sereality-quick-action sereality-action-primary" @click="openBackup"><a-icon type="cloud-download"></a-icon> {{ i18n "sereality.backup" }}</a-button><a-button class="sereality-quick-action" @click="openLogs"><a-icon type="file-text"></a-icon> {{ i18n "sereality.logs" }}</a-button><a-button class="sereality-quick-action" @click="openConfig"><a-icon type="setting"></a-icon> {{ i18n "sereality.config" }}</a-button></div>
               </div>
             </div>
             <div class="sereality-dashboard-kpis">
               <a-card class="sereality-glass-card sereality-kpi-card" :bordered="true"><div class="sereality-kpi-top"><div class="sereality-kpi-label">Active clients</div><div class="sereality-kpi-icon"><a-icon type="team"></a-icon></div></div><div class="sereality-kpi-value accent">[[ dashboard.onlineClients.length ]]</div><div class="sereality-kpi-note">ผู้ใช้ที่ออนไลน์อยู่</div></a-card>
               <a-card class="sereality-glass-card sereality-kpi-card" :bordered="true"><div class="sereality-kpi-top"><div class="sereality-kpi-label">Total clients</div><div class="sereality-kpi-icon"><a-icon type="user"></a-icon></div></div><div class="sereality-kpi-value">[[ dashboard.totalClients ]]</div><div class="sereality-kpi-note">จากทุก Inbound</div></a-card>
-              <a-card class="sereality-glass-card sereality-kpi-card" :bordered="true"><div class="sereality-kpi-top"><div class="sereality-kpi-label">Enabled inbounds</div><div class="sereality-kpi-icon"><a-icon type="deployment-unit"></a-icon></div></div><div class="sereality-kpi-value">[[ dashboard.enabledInbounds ]]</div><div class="sereality-kpi-note">จาก [[ dashboard.inbounds.length ]] รายการ</div></a-card>
+              <a-card class="sereality-glass-card sereality-kpi-card" :bordered="true"><div class="sereality-kpi-top"><div class="sereality-kpi-label">{{ i18n "sereality.enabledInbounds" }}</div><div class="sereality-kpi-icon"><a-icon type="deployment-unit"></a-icon></div></div><div class="sereality-kpi-value">[[ dashboard.enabledInbounds ]]</div><div class="sereality-kpi-note">{{ i18n "sereality.of" }} [[ dashboard.inbounds.length ]] {{ i18n "sereality.items" }}</div></a-card>
               <a-card class="sereality-glass-card sereality-kpi-card is-alert" :bordered="true"><div class="sereality-kpi-top"><div class="sereality-kpi-label">Expiring soon</div><div class="sereality-kpi-icon"><a-icon type="clock-circle"></a-icon></div></div><div class="sereality-kpi-value accent">[[ dashboard.expiringClients ]]</div><div class="sereality-kpi-note">ภายใน 7 วัน</div></a-card>
           </div>
           <transition name="list" appear>
@@ -1120,7 +1120,7 @@
         show(logs) {
             this.visible = true;
             this.logs = logs; 
-            this.formattedLogs = this.logs?.length > 0 ? this.formatLogs(this.logs) : "No Record...";
+            this.formattedLogs = this.logs?.length > 0 ? this.formatLogs(this.logs) : '{{ i18n "sereality.noRecord" }}';
         },
         formatLogs(logs) {
             let formattedLogs = '';

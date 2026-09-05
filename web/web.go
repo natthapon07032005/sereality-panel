@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -91,7 +92,8 @@ type Server struct {
 	settingService service.SettingService
 	tgbotService   service.Tgbot
 
-	cron *cron.Cron
+	cron                *cron.Cron
+	lastAutomaticBackup time.Time
 
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -239,6 +241,25 @@ func (s *Server) initRouter() (*gin.Engine, error) {
 
 func (s *Server) startTask() {
 	subscriptionService := service.SubscriptionService{}
+	s.cron.AddFunc("@every 1m", func() {
+		backupConfig, err := s.settingService.GetAutomaticBackupConfig()
+		if err != nil || !backupConfig.Enabled {
+			return
+		}
+		interval := time.Duration(backupConfig.IntervalHours) * time.Hour
+		if !service.ShouldRunAutomaticBackup(s.lastAutomaticBackup, time.Now(), interval) {
+			return
+		}
+		backupDirectory := backupConfig.Directory
+		if !filepath.IsAbs(backupDirectory) {
+			backupDirectory = filepath.Join(filepath.Dir(config.GetDBPath()), backupDirectory)
+		}
+		if _, err := service.CreateAutomaticBackup(config.GetDBPath(), backupDirectory, time.Now(), backupConfig.Retention); err != nil {
+			logger.Warning("automatic database backup failed:", err)
+			return
+		}
+		s.lastAutomaticBackup = time.Now()
+	})
 	s.cron.AddFunc("@every 1m", func() {
 		defer func() {
 			if recovered := recover(); recovered != nil {

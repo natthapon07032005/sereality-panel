@@ -191,18 +191,18 @@ func TestNodeSyncControllerReturnsPlanOnlyWithoutRequestSecrets(t *testing.T) {
 	}
 }
 
-func TestNodeSyncControllerRejectsApplyWithoutTransport(t *testing.T) {
+func TestNodeSyncControllerRequiresExplicitDryRunMode(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	controller.NewNodeSyncController(router.Group("/api"))
-	req := httptest.NewRequest(http.MethodPost, "/api/nodes/15/sync/plan", strings.NewReader(`{"dryRun":false,"local":{"complete":true},"remote":{"complete":true}}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/nodes/15/sync/plan", strings.NewReader(`{"local":{"complete":true},"remote":{"complete":true}}`))
 	req.Header.Set("Content-Type", "application/json")
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, req)
-	if response.Code != http.StatusNotImplemented {
-		t.Fatalf("status = %d, want %d: %s", response.Code, http.StatusNotImplemented, response.Body.String())
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusBadRequest)
 	}
 	if strings.Contains(response.Body.String(), "apiToken") || strings.Contains(response.Body.String(), "secret") {
-		t.Fatalf("apply rejection leaked credentials: %s", response.Body.String())
+		t.Fatal("invalid mode rejection leaked credentials")
 	}
 }

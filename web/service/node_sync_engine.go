@@ -1,9 +1,20 @@
 package service
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"net/url"
 	"sort"
 	"strings"
+	"time"
+
+	"x-ui/database"
+	"x-ui/database/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -11,6 +22,19 @@ var (
 	ErrNodeSyncItemIDRequired     = errors.New("node sync item ID is required")
 	ErrNodeSyncDuplicateItemID    = errors.New("node sync item ID must be unique within a snapshot")
 	ErrNodeSyncSnapshotIncomplete = errors.New("node sync snapshot is incomplete")
+	ErrNodeSyncNodeNotFound       = errors.New("configured node was not found")
+	ErrNodeSyncNodeDisabled       = errors.New("configured node is disabled")
+	ErrNodeSyncNodeURLInvalid     = errors.New("configured node URL is invalid")
+	ErrNodeSyncTokenInvalid       = errors.New("node sync token is invalid")
+	ErrNodeSyncRemoteUnavailable  = errors.New("remote node is unavailable")
+	ErrNodeSyncRemoteRejected     = errors.New("remote node rejected the request")
+	ErrNodeSyncRemoteMalformed    = errors.New("remote node response is invalid")
+	ErrNodeSyncRemoteIncomplete   = errors.New("remote node snapshot is incomplete")
+)
+
+const (
+	nodeSyncRequestTimeout   = 5 * time.Second
+	nodeSyncMaxResponseBytes = 1 << 20
 )
 
 // NodeSyncItem is the comparison-safe portion of an item snapshot.
@@ -49,16 +73,18 @@ type NodeSyncOperation struct {
 	ItemID string         `json:"itemId"`
 }
 
-// NodeSyncPlan is a plan-only result. Applied is always false because this package
-// does not contact, mutate, or otherwise execute work on a remote node.
+// NodeSyncPlan is a plan-only result. Applied remains false until a remote protocol
+// can safely mutate complete snapshots. RemoteSnapshotFetched identifies the bounded,
+// authenticated apply-preview path without exposing snapshot revisions.
 type NodeSyncPlan struct {
-	NodeID     int                 `json:"nodeId"`
-	DryRun     bool                `json:"dryRun"`
-	Applied    bool                `json:"applied"`
-	Added      int                 `json:"added"`
-	Updated    int                 `json:"updated"`
-	Removed    int                 `json:"removed"`
-	Operations []NodeSyncOperation `json:"operations"`
+	NodeID                int                 `json:"nodeId"`
+	DryRun                bool                `json:"dryRun"`
+	Applied               bool                `json:"applied"`
+	RemoteSnapshotFetched bool                `json:"remoteSnapshotFetched,omitempty"`
+	Added                 int                 `json:"added"`
+	Updated               int                 `json:"updated"`
+	Removed               int                 `json:"removed"`
+	Operations            []NodeSyncOperation `json:"operations"`
 }
 
 // BuildNodeSyncPlan compares local and remote snapshots without performing a sync.
@@ -110,6 +136,68 @@ func BuildNodeSyncPlan(input NodeSyncPlanInput) (NodeSyncPlan, error) {
 		}
 	}
 	return plan, nil
+}
+
+// FetchNodeSyncSnapshot authenticates an operator-supplied token against the
+// configured node and fetches only the comparison-safe remote snapshot.
+func FetchNodeSyncSnapshot(nodeID int, token string) (NodeSyncSnapshot, error) {
+	if nodeID <= 0 {
+		return NodeSyncSnapshot{}, ErrNodeSyncNodeIDRequired
+	}
+	var node model.Node
+	if err := database.GetDB().First(&node, nodeID).Error; err != nil {
+		if database.IsNotFound(err) {
+			return NodeSyncSnapshot{}, ErrNodeSyncNodeNotFound
+		}
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteUnavailable
+	}
+	if !node.Enabled {
+		return NodeSyncSnapshot{}, ErrNodeSyncNodeDisabled
+	}
+	if err := ValidateNodeURLAndName(NodeInput{Name: node.Name, BaseURL: node.BaseURL}); err != nil {
+		return NodeSyncSnapshot{}, ErrNodeSyncNodeURLInvalid
+	}
+	if strings.TrimSpace(token) == "" || bcrypt.CompareHashAndPassword([]byte(node.APITokenHash), []byte(token)) != nil {
+		return NodeSyncSnapshot{}, ErrNodeSyncTokenInvalid
+	}
+
+	baseURL, _ := url.Parse(strings.TrimSpace(node.BaseURL))
+	baseURL.Path = strings.TrimRight(baseURL.Path, "/") + "/api/v2/nodes/sync/snapshot"
+	requestCtx, cancel := context.WithTimeout(context.Background(), nodeSyncRequestTimeout)
+	defer cancel()
+	request, err := http.NewRequestWithContext(requestCtx, http.MethodGet, baseURL.String(), nil)
+	if err != nil {
+		return NodeSyncSnapshot{}, ErrNodeSyncNodeURLInvalid
+	}
+	request.Header.Set("Authorization", "Bearer "+token)
+	request.Header.Set("Accept", "application/json")
+	client := &http.Client{Transport: http.DefaultTransport, Timeout: nodeSyncRequestTimeout}
+	response, err := client.Do(request)
+	if err != nil {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteUnavailable
+	}
+	defer response.Body.Close()
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteRejected
+	}
+	body, err := io.ReadAll(io.LimitReader(response.Body, nodeSyncMaxResponseBytes+1))
+	if err != nil || len(body) > nodeSyncMaxResponseBytes {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteMalformed
+	}
+	var envelope struct {
+		Success bool             `json:"success"`
+		Data    NodeSyncSnapshot `json:"data"`
+	}
+	if err := json.Unmarshal(body, &envelope); err != nil || !envelope.Success {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteMalformed
+	}
+	if !envelope.Data.Complete {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteIncomplete
+	}
+	if _, err := nodeSyncItemsByID(envelope.Data); err != nil {
+		return NodeSyncSnapshot{}, ErrNodeSyncRemoteMalformed
+	}
+	return envelope.Data, nil
 }
 
 func nodeSyncItemsByID(snapshot NodeSyncSnapshot) (map[string]string, error) {

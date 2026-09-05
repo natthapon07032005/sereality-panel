@@ -19,7 +19,7 @@
 - Package management backend foundation พร้อม validation และ CRUD API
 - Packages และ Nodes UI รองรับ create/edit/delete ผ่าน endpoint จริง พร้อม confirmation ก่อนลบ
 - User management พร้อมรายการผู้ใช้, assign package และเปลี่ยนสถานะ โดย DTO ไม่เปิดเผย credential
-- Multi-node model/service foundation พร้อมบังคับ HTTPS, hash token และ plan-only snapshot sync ที่เรียงผลลัพธ์แน่นอน
+- Multi-node มี authenticated HTTPS snapshot transport สำหรับ apply-preview พร้อมบังคับ HTTPS, ตรวจ token hash, timeout และไม่ทำ mutation ปลายทางจนกว่าจะมี payload/สัญญาที่ปลอดภัย
 - API v2 มี health, package CRUD, user list/status/package assignment, node CRUD และ subscription list/create/status แบบ response envelope
 - Subscription lifecycle พร้อมรายการ, transition rules และ expiration sweep ทุกนาที; หน้า UI ยังไม่ทำ payment/activate อัตโนมัติ
 - Login มี bounded sliding-window rate limit และ default admin password ใหม่เก็บเป็น bcrypt
@@ -32,10 +32,12 @@
 - Frontend `HttpUtil` รองรับ GET/POST/PUT/DELETE เพื่อให้หน้า admin เรียก CRUD API ได้ครบ
 - Subscription UI/API v2 สามารถสร้างรายการ `pending` จาก user/package จริง และ backend ตรวจ reference ก่อนบันทึก
 - Backup snapshot ใช้ SQLite `VACUUM INTO` เพื่อรวม committed WAL data และเปลี่ยนไฟล์ปลายทางแบบ atomic
+- Backup อัตโนมัติเปิด/ปิดได้จาก Settings ตั้งรอบเวลาและจำนวนไฟล์ย้อนหลังได้ โดยลบเฉพาะไฟล์ที่ระบบสร้างเอง
+- UI รุ่น Sereality มีภาษาไทย/อังกฤษเท่านั้น และสลับด้วย toggle จาก sidebar, หน้า Settings และหน้า Login
 - DB import จำกัดขนาดไว้ที่ 512 MiB และตัดการเขียนทันทีเมื่อเกินขนาด
 - ระบบชำระเงินจริงและการ deploy ยังไม่ทำจนกว่าจะกำหนด provider/กติกาธุรกิจและมีการอนุมัติเพิ่มเติม
 
 ## ข้อจำกัดที่ตรวจพบ
 
-- Multi-node ตอนนี้สร้าง sync plan แบบ `dryRun: true` เท่านั้น และต้องได้รับ snapshot ที่มี `complete: true` ทั้งสองฝั่งก่อนวางแผน จึงไม่ตีความข้อมูลที่ดึงมาไม่ครบเป็นคำสั่งลบ; request ที่ขอ apply ถูกปฏิเสธด้วย 501 จนกว่าจะมี transport ที่อนุมัติ
-- Full test ผ่านแล้วด้วย `CGO_ENABLED=1` และ LLVM/LLD toolchain ที่มีอยู่ใน Visual Studio Build Tools (`go test -count=1 -p 1 ./...`)
+- Multi-node apply ตอนนี้เป็น preview ที่ดึง snapshot จริงผ่าน HTTPS และคำนวณแผนแบบไม่ทำลายข้อมูล; การสั่ง mutation ยังต้องกำหนด protocol และ payload ที่ปลอดภัยก่อน
+- การตรวจเต็มรอบบนเครื่องนี้ติดข้อจำกัด SQLite เพราะ Go ถูก build ด้วย `CGO_ENABLED=0`; focused tests ของ service/controller/web ผ่านแล้ว

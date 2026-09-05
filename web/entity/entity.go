@@ -37,6 +37,10 @@ type AllSetting struct {
 	TgBotLoginNotify            bool   `json:"tgBotLoginNotify" form:"tgBotLoginNotify"`
 	TgCpu                       int    `json:"tgCpu" form:"tgCpu"`
 	TgLang                      string `json:"tgLang" form:"tgLang"`
+	BackupEnable                bool   `json:"backupEnable" form:"backupEnable"`
+	BackupIntervalHours         int    `json:"backupIntervalHours" form:"backupIntervalHours"`
+	BackupRetention             int    `json:"backupRetention" form:"backupRetention"`
+	BackupDirectory             string `json:"backupDirectory" form:"backupDirectory"`
 	TimeLocation                string `json:"timeLocation" form:"timeLocation"`
 	SecretEnable                bool   `json:"secretEnable" form:"secretEnable"`
 	SubEnable                   bool   `json:"subEnable" form:"subEnable"`
@@ -120,6 +124,22 @@ func (s *AllSetting) CheckValid() error {
 	}
 	if !strings.HasSuffix(s.SubJsonPath, "/") {
 		s.SubJsonPath += "/"
+	}
+
+	if s.BackupIntervalHours == 0 {
+		s.BackupIntervalHours = 24
+	}
+	if s.BackupRetention == 0 {
+		s.BackupRetention = 7
+	}
+	if s.BackupIntervalHours < 1 || s.BackupIntervalHours > 168 {
+		return common.NewError("backup interval must be between 1 and 168 hours")
+	}
+	if s.BackupRetention < 1 || s.BackupRetention > 30 {
+		return common.NewError("backup retention must be between 1 and 30 files")
+	}
+	if strings.TrimSpace(s.BackupDirectory) == "" {
+		s.BackupDirectory = "backups"
 	}
 
 	_, err := time.LoadLocation(s.TimeLocation)

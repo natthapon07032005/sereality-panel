@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NodeSyncController exposes a plan-only node synchronization endpoint.
+// NodeSyncController exposes dry-run and authenticated remote-backed sync planning.
 type NodeSyncController struct {
 	BaseController
 }
@@ -23,9 +23,10 @@ func NewNodeSyncController(g *gin.RouterGroup) *NodeSyncController {
 }
 
 type nodeSyncPlanRequest struct {
-	Local  service.NodeSyncSnapshot `json:"local"`
-	Remote service.NodeSyncSnapshot `json:"remote"`
-	DryRun bool                     `json:"dryRun"`
+	Local    service.NodeSyncSnapshot `json:"local"`
+	Remote   service.NodeSyncSnapshot `json:"remote"`
+	DryRun   *bool                    `json:"dryRun"`
+	APIToken string                   `json:"apiToken"`
 }
 
 func (a *NodeSyncController) plan(c *gin.Context) {
@@ -40,8 +41,33 @@ func (a *NodeSyncController) plan(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, service.NewAPIV2Response(nil, errors.New("invalid node sync plan")))
 		return
 	}
-	if !request.DryRun {
-		c.JSON(http.StatusNotImplemented, service.NewAPIV2Response(nil, service.ErrNodeSyncUnavailable))
+	if request.DryRun == nil {
+		c.JSON(http.StatusBadRequest, service.NewAPIV2Response(nil, errors.New("dryRun must be specified")))
+		return
+	}
+
+	if !*request.DryRun {
+		if !request.Local.Complete {
+			c.JSON(http.StatusBadRequest, service.NewAPIV2Response(nil, errors.New("invalid node sync plan")))
+			return
+		}
+		remote, err := service.FetchNodeSyncSnapshot(nodeID, request.APIToken)
+		if err != nil {
+			status := http.StatusBadGateway
+			switch {
+			case errors.Is(err, service.ErrNodeSyncNodeNotFound), errors.Is(err, service.ErrNodeSyncNodeDisabled), errors.Is(err, service.ErrNodeSyncNodeURLInvalid), errors.Is(err, service.ErrNodeSyncTokenInvalid):
+				status = http.StatusBadRequest
+			}
+			c.JSON(status, service.NewAPIV2Response(nil, err))
+			return
+		}
+		plan, err := service.BuildNodeSyncPlan(service.NodeSyncPlanInput{NodeID: nodeID, Local: request.Local, Remote: remote, DryRun: false})
+		if err != nil {
+			c.JSON(http.StatusBadGateway, service.NewAPIV2Response(nil, errors.New("invalid node sync plan")))
+			return
+		}
+		plan.RemoteSnapshotFetched = true
+		c.JSON(http.StatusOK, service.NewAPIV2Response(plan, nil))
 		return
 	}
 
@@ -49,7 +75,7 @@ func (a *NodeSyncController) plan(c *gin.Context) {
 		NodeID: nodeID,
 		Local:  request.Local,
 		Remote: request.Remote,
-		DryRun: request.DryRun,
+		DryRun: *request.DryRun,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, service.NewAPIV2Response(nil, errors.New("invalid node sync plan")))
