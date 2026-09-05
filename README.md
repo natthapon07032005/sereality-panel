@@ -1,211 +1,223 @@
-[English](/README.md) | [فارسی](/README.fa_IR.md) | [中文](/README.zh_CN.md) | [Español](/README.es_ES.md) | [Русский](/README.ru_RU.md)
+# Sereality Panel
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./media/3x-ui-dark.png">
-    <img alt="Sereality Panel" src="./media/3x-ui-light.png">
-  </picture>
+  <img src="./dashboard-preview.svg" alt="ตัวอย่างหน้า Dashboard ของ Sereality Panel" width="900">
 </p>
 
-**An Advanced Web Panel • Built on Xray Core**
+<p align="center"><strong>Web Panel สำหรับจัดการ Xray ที่เรียบง่าย ปลอดภัย และใช้ธีมชมพู–ขาว–ดำ</strong></p>
 
-[![](https://img.shields.io/github/v/release/natthapon07032005/sereality-panel.svg)](https://github.com/natthapon07032005/sereality-panel/releases)
-[![](https://img.shields.io/github/actions/workflow/status/natthapon07032005/sereality-panel/release.yml.svg)](#)
-[![GO Version](https://img.shields.io/github/go-mod/go-version/natthapon07032005/sereality-panel.svg)](#)
-[![Downloads](https://img.shields.io/github/downloads/natthapon07032005/sereality-panel/total.svg)](#)
-[![License](https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+<p align="center">
+  <a href="https://github.com/natthapon07032005/sereality-panel/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Sereality%20Panel-v1.0.0-ff4f9a" alt="Sereality Panel v1.0.0"></a>
+  <a href="https://github.com/natthapon07032005/sereality-panel/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/natthapon07032005/sereality-panel/release.yml?label=build" alt="Build status"></a>
+  <a href="https://github.com/natthapon07032005/sereality-panel/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-black" alt="GPL-3.0 license"></a>
+</p>
 
-> **Disclaimer:** This project is only for personal learning and communication, please do not use it for illegal purposes, please do not use it in a production environment
+Sereality Panel คือโปรเจกต์ที่นำโค้ดฐานจาก 3x-ui รุ่นเสถียร `v2.5.5` มาพัฒนาต่อภายใต้ชื่อและทิศทางของ Sereality โดยรุ่นแรกของโปรเจกต์ใช้หมายเลขเวอร์ชัน `v1.0.0` เพื่อแยกจากเวอร์ชันของโค้ดฐานอย่างชัดเจน
 
-## Sereality Panel Installation
+> โปรเจกต์นี้จัดทำเพื่อการเรียนรู้ การทดสอบ และการบริหารเซิร์ฟเวอร์ของผู้ดูแลเอง ผู้ใช้ต้องตรวจสอบกฎหมายและนโยบายของผู้ให้บริการก่อนใช้งาน ห้ามนำไปใช้ในทางผิดกฎหมาย
 
-```
+## เวอร์ชันของโปรเจกต์
+
+| รายการ | ค่า |
+| --- | --- |
+| ชื่อโปรเจกต์ | Sereality Panel |
+| รุ่นแรกของ Sereality | `v1.0.0` |
+| โค้ดฐาน | 3x-ui `v2.5.5` |
+| แกนการทำงาน | Xray Core |
+| ระบบที่แนะนำ | Linux 64-bit หรือ ARM ที่รองรับ |
+
+## ภาพรวมหน้าตาเว็บ
+
+หน้า Dashboard ออกแบบให้เป็นโทนดำเป็นพื้น ชมพูเป็นสีเน้น และใช้ตัวอักษรสีขาวเพื่อให้อ่านง่าย ประกอบด้วย:
+
+- แถบเมนูของ Sereality Panel และปุ่มสลับธีม
+- การ์ดสรุปสถานะ Xray, ผู้ใช้ที่ใช้งาน, ปริมาณทราฟฟิก และผู้ใช้ใกล้หมดอายุ
+- กราฟ Upload/Download และภาพรวมการใช้ทรัพยากรเครื่อง
+- สรุป Inbounds, Clients, พอร์ต และสถานะบริการ
+- ปุ่มลัดสำหรับรีเฟรช เปิดการตั้งค่า และจัดการบริการ
+- รองรับหน้าจอมือถือ แท็บเล็ต และเดสก์ท็อป
+
+ภาพด้านบนเป็นภาพตัวอย่าง UI ของโปรเจกต์ ไฟล์จริงอยู่ที่ [`dashboard-preview.svg`](./dashboard-preview.svg)
+
+## ฟังก์ชันที่มีใน `v1.0.0`
+
+### Dashboard
+
+- ตรวจสถานะ Panel และ Xray แบบรวมในหน้าเดียว
+- ดู CPU, RAM, Disk, Uptime และสถานะเครือข่าย
+- ดูจำนวน Inbounds, Clients และ Clients ที่ออนไลน์
+- ดูทราฟฟิก Upload/Download และผู้ใช้ที่ใกล้หมดอายุ
+- รีเฟรชข้อมูลจากเซิร์ฟเวอร์ได้ทันที
+
+### Inbounds และ Clients
+
+- สร้าง แก้ไข เปิด/ปิด และลบ Inbound
+- เพิ่ม Client รายคนหรือเพิ่มหลายคนพร้อมกัน
+- ค้นหา Inbound และ Client
+- ดูทราฟฟิก Upload, Download, รวม และวันหมดอายุ
+- ดู Client ที่ออนไลน์และประวัติ IP
+- สร้าง QR Code และคัดลอกลิงก์การเชื่อมต่อ
+- Export ลิงก์ทั้งหมดหรือลิงก์ Subscription
+- Export/Import ข้อมูล Inbound
+- Clone Inbound เพื่อนำการตั้งค่าไปสร้างรายการใหม่
+- รีเซ็ตทราฟฟิกของ Client, Inbound หรือทั้งหมด
+- ลบ Client ที่ใช้ทราฟฟิกครบหรือหมดอายุ
+- ตั้งค่า IP Limit ต่อ Inbound
+
+### Protocol ที่รองรับ
+
+Inbound รองรับโปรโตคอลต่อไปนี้:
+
+- VMess
+- VLESS
+- Trojan
+- Shadowsocks
+- Dokodemo-door
+- SOCKS
+- HTTP
+- WireGuard
+
+ในส่วนการเชื่อมต่อยังรองรับการตั้งค่า TCP, WebSocket, gRPC, HTTPUpgrade, XHTTP, mKCP, TLS และ REALITY ตามความสามารถของ Xray รุ่นที่ติดตั้ง
+
+### Package และ User Management
+
+- สร้าง แก้ไข และลบแพ็กเกจ
+- กำหนดระยะเวลาและเงื่อนไขของแพ็กเกจ
+- สร้างและจัดการผู้ใช้ของ Panel
+- เปิด/ปิดสถานะผู้ใช้
+- ผูกผู้ใช้เข้ากับแพ็กเกจ
+- ตรวจสอบข้อมูลผ่านหน้าเว็บหรือ API รุ่นที่ 2
+
+โมดูลนี้เป็นส่วนขยายของ Sereality รุ่นแรก จึงควรทดสอบกับข้อมูลสำรองก่อนใช้งานจริง
+
+### Subscription และ Nodes
+
+- จัดการ Subscription และสถานะการใช้งาน
+- กำหนดวันเริ่มต้นและจำนวนวันของ Subscription
+- จัดการ Node ที่เชื่อมต่อผ่าน HTTPS
+- เก็บ Token ของ Node ในรูปแบบที่ไม่เก็บค่า Token ตรง ๆ
+- ตรวจสอบสถานะ Node และข้อมูลการจัดการเบื้องต้น
+
+### Xray Configuration
+
+- แก้ไข Xray configuration ผ่านหน้าเว็บ
+- จัดการ Inbound, Outbound, Routing และ Balancer
+- ตั้งค่า DNS และ Fake DNS
+- ตั้งค่ากฎ Block, Direct, IPv4 และ WARP
+- ตั้งค่า Log level, Access log, Error log และ DNS log
+- เปิดใช้สถิติทราฟฟิกของ Inbound/Outbound
+- สร้าง X25519 key ใหม่สำหรับการตั้งค่า REALITY
+- เปลี่ยน Xray version และรีสตาร์ตบริการจากหน้าเว็บ
+
+### Panel Settings
+
+- เปลี่ยนชื่อผู้ใช้ รหัสผ่าน และ Secret สำหรับเข้าสู่ระบบ
+- เปลี่ยนพอร์ตของ Panel
+- เปลี่ยนหรือสุ่ม Web Base Path
+- ตั้งค่า Listen IP และรองรับ SSH Port Forwarding
+- เปิด HTTPS ด้วย Certificate และ Private Key
+- ตั้งค่า Timezone และจำนวนรายการต่อหน้า
+- ตั้งค่า Telegram Bot และการแจ้งเตือน
+- ตั้งค่า Subscription service
+- Export และ Restore ฐานข้อมูล
+- สลับ Light/Dark theme
+
+### เครื่องมือดูแลเซิร์ฟเวอร์
+
+ผ่านคำสั่ง `x-ui` ยังมีเครื่องมือสำหรับ:
+
+- จัดการ SSL ด้วย ACME และ Cloudflare
+- จัดการ IP Limit และ Fail2ban
+- จัดการ UFW Firewall
+- เปิด/ปิด BBR
+- อัปเดตไฟล์ GeoIP และ GeoSite
+- ดู Debug log และล้าง log
+- ทดสอบความเร็วด้วย Ookla Speedtest
+- Start, Stop, Restart และดูสถานะ Panel/Xray
+- เปิดหรือปิดการเริ่มทำงานอัตโนมัติหลังบูต
+
+## การติดตั้ง
+
+### ติดตั้งรุ่นล่าสุดของ Sereality Panel
+
+คำสั่งนี้จะดาวน์โหลด Release ล่าสุดของ Sereality Panel และตรวจสอบ SHA-256 ก่อนติดตั้ง:
+
+```bash
 bash <(curl -Ls https://raw.githubusercontent.com/natthapon07032005/sereality-panel/main/install.sh)
 ```
 
-## Install Sereality Panel v1.0.0
+### ติดตั้งรุ่นแรก `v1.0.0` แบบระบุเวอร์ชัน
 
-Sereality Panel `v1.0.0` is the first project release, based on the stable 3x-ui `v2.5.5` codebase:
-
-```
+```bash
 VERSION=v1.0.0 && bash <(curl -Ls "https://raw.githubusercontent.com/natthapon07032005/sereality-panel/$VERSION/install.sh") $VERSION
 ```
 
-The installer downloads the matching Sereality Panel release for the server architecture and verifies its SHA-256 checksum before installation.
+หลังติดตั้งเสร็จ ให้ดูข้อมูลเข้าสู่ระบบและ URL ด้วย:
 
-## SSL Certificate
-
-<details>
-  <summary>Click for SSL Certificate details</summary>
-
-### ACME
-
-To manage SSL certificates using ACME:
-
-1. Ensure your domain is correctly resolved to the server.
-2. Run the `x-ui` command in the terminal, then choose `SSL Certificate Management`.
-3. You will be presented with the following options:
-
-   - **Get SSL:** Obtain SSL certificates.
-   - **Revoke:** Revoke existing SSL certificates.
-   - **Force Renew:** Force renewal of SSL certificates.
-   - **Show Existing Domains:** Display all domain certificates available on the server.  
-   - **Set Certificate Paths for the Panel:** Specify the certificate for your domain to be used by the panel. 
-
-### Certbot
-
-To install and use Certbot:
-
-```sh
-apt-get install certbot -y
-certbot certonly --standalone --agree-tos --register-unsafely-without-email -d yourdomain.com
-certbot renew --dry-run
+```bash
+x-ui settings
 ```
 
-### Cloudflare
+โดยปกติระบบจะสุ่มค่าที่สำคัญให้ในระหว่างติดตั้ง ควรบันทึกชื่อผู้ใช้ รหัสผ่าน พอร์ต และ Web Base Path ไว้ในที่ปลอดภัย
 
-The management script includes a built-in SSL certificate application for Cloudflare. To use this script to apply for a certificate, you need the following:
+## คำสั่งจัดการ Panel
 
-- Cloudflare registered email
-- Cloudflare Global API Key
-- The domain name must be resolved to the current server through Cloudflare
+| คำสั่ง | หน้าที่ |
+| --- | --- |
+| `x-ui` | เปิดเมนูจัดการแบบโต้ตอบ |
+| `x-ui start` | เริ่มบริการ Panel |
+| `x-ui stop` | หยุดบริการ Panel |
+| `x-ui restart` | รีสตาร์ต Panel และ Xray |
+| `x-ui status` | ดูสถานะบริการ |
+| `x-ui settings` | แสดงค่าการตั้งค่าปัจจุบัน |
+| `x-ui enable` | เปิด Autostart |
+| `x-ui disable` | ปิด Autostart |
+| `x-ui log` | ดูและจัดการ Log |
+| `x-ui banlog` | ดู Log ของ Fail2ban/IP Limit |
+| `x-ui update` | อัปเดต Panel |
+| `x-ui legacy` | เลือกติดตั้งรุ่นที่ระบุ |
+| `x-ui install` | ติดตั้ง Panel |
+| `x-ui uninstall` | ถอนการติดตั้ง Panel |
 
-**How to get the Cloudflare Global API Key:**
+คำสั่ง `x-ui legacy` จะถามหมายเลขเวอร์ชัน เช่น `1.0.0` และจะแปลงเป็น Tag `v1.0.0` ให้อัตโนมัติ ต้องใช้เฉพาะเวอร์ชันที่มีอยู่ใน Release ของ Sereality Panel
 
-1. Run the `x-ui` command in the terminal, then choose `Cloudflare SSL Certificate`.
-2. Visit the link: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens).
-3. Click on "View Global API Key" (see the screenshot below):
-   ![](media/APIKey1.PNG)
-4. You may need to re-authenticate your account. After that, the API Key will be shown (see the screenshot below):
-   ![](media/APIKey2.png)
+## เมนูจัดการแบบโต้ตอบ
 
-When using, just enter your `domain name`, `email`, and `API KEY`. The diagram is as follows:
-   ![](media/DetailEnter.png)
+เมื่อรัน `x-ui` จะมีเมนูหลักดังนี้:
 
+| เมนู | หน้าที่ |
+| ---: | --- |
+| 1–5 | Install, Update, Update Menu, Legacy Version, Uninstall |
+| 6–10 | รีเซ็ตบัญชี, รีเซ็ต Web Base Path, รีเซ็ต Settings, เปลี่ยนพอร์ต, ดู Settings |
+| 11–15 | Start, Stop, Restart, Check Status, Logs Management |
+| 16–17 | Enable/Disable Autostart |
+| 18–20 | SSL Certificate, Cloudflare SSL, IP Limit |
+| 21–22 | Firewall และ SSH Port Forwarding |
+| 23–25 | BBR, Geo Files และ Speedtest |
 
-</details>
+## Backup และ Restore
 
-## Manual Install & Upgrade
+ฐานข้อมูลหลักอยู่ที่:
 
-<details>
-  <summary>Click for manual install details</summary>
-
-#### Usage
-
-1. To download the latest version of the compressed package directly to your server, run the following command:
-
-```sh
-ARCH=$(uname -m)
-case "${ARCH}" in
-  x86_64 | x64 | amd64) XUI_ARCH="amd64" ;;
-  i*86 | x86) XUI_ARCH="386" ;;
-  armv8* | armv8 | arm64 | aarch64) XUI_ARCH="arm64" ;;
-  armv7* | armv7) XUI_ARCH="armv7" ;;
-  armv6* | armv6) XUI_ARCH="armv6" ;;
-  armv5* | armv5) XUI_ARCH="armv5" ;;
-  s390x) echo 's390x' ;;
-  *) XUI_ARCH="amd64" ;;
-esac
-
-
-wget https://github.com/MHSanaei/3x-ui/releases/latest/download/x-ui-linux-${XUI_ARCH}.tar.gz
+```text
+/etc/x-ui/x-ui.db
 ```
 
-2. Once the compressed package is downloaded, execute the following commands to install or upgrade x-ui:
+สามารถ Backup และ Restore ได้จากหน้าเว็บในส่วนการตั้งค่า โดยไฟล์ Backup เป็นไฟล์ฐานข้อมูล `.db`
 
-```sh
-ARCH=$(uname -m)
-case "${ARCH}" in
-  x86_64 | x64 | amd64) XUI_ARCH="amd64" ;;
-  i*86 | x86) XUI_ARCH="386" ;;
-  armv8* | armv8 | arm64 | aarch64) XUI_ARCH="arm64" ;;
-  armv7* | armv7) XUI_ARCH="armv7" ;;
-  armv6* | armv6) XUI_ARCH="armv6" ;;
-  armv5* | armv5) XUI_ARCH="armv5" ;;
-  s390x) echo 's390x' ;;
-  *) XUI_ARCH="amd64" ;;
-esac
+คำแนะนำก่อน Restore:
 
-cd /root/
-rm -rf x-ui/ /usr/local/x-ui/ /usr/bin/x-ui
-tar zxvf x-ui-linux-${XUI_ARCH}.tar.gz
-chmod +x x-ui/x-ui x-ui/bin/xray-linux-* x-ui/x-ui.sh
-cp x-ui/x-ui.sh /usr/bin/x-ui
-cp -f x-ui/x-ui.service /etc/systemd/system/
-mv x-ui/ /usr/local/
-systemctl daemon-reload
-systemctl enable x-ui
-systemctl restart x-ui
-```
+1. ดาวน์โหลด Backup ล่าสุดเก็บไว้นอกเซิร์ฟเวอร์
+2. ตรวจสอบว่าไฟล์เป็นของ Sereality Panel เครื่องเดียวกัน
+3. หยุดการแก้ไขข้อมูลระหว่าง Restore
+4. รีสตาร์ต Panel และตรวจสอบ Inbounds/Clients หลัง Restore
 
-</details>
+การ Restore ฐานข้อมูลไม่ใช่การย้อนเวอร์ชันของโปรแกรมทั้งชุด หากต้องการย้อนเวอร์ชันของตัวโปรแกรม ให้ใช้ Release ที่ต้องการติดตั้งใหม่
 
-## Install with Docker
+## HTTPS และ Reverse Proxy ด้วย Nginx
 
-<details>
-  <summary>Click for Docker details</summary>
+ตัวอย่าง Reverse Proxy สำหรับ Panel ที่พอร์ต `2053`:
 
-#### Usage
-
-1. **Install Docker:**
-
-   ```sh
-   bash <(curl -sSL https://get.docker.com)
-   ```
-
-2. **Clone the Project Repository:**
-
-   ```sh
-   git clone https://github.com/MHSanaei/3x-ui.git
-   cd 3x-ui
-   ```
-
-3. **Start the Service:**
-
-   ```sh
-   docker compose up -d
-   ```
-
-  Add ```--pull always``` flag to make docker automatically recreate container if a newer image is pulled. See https://docs.docker.com/reference/cli/docker/container/run/#pull for more info.
-
-   **OR**
-
-   ```sh
-   docker run -itd \
-      -e XRAY_VMESS_AEAD_FORCED=false \
-      -v $PWD/db/:/etc/x-ui/ \
-      -v $PWD/cert/:/root/cert/ \
-      --network=host \
-      --restart=unless-stopped \
-      --name 3x-ui \
-      ghcr.io/mhsanaei/3x-ui:latest
-   ```
-
-4. **Update to the Latest Version:**
-
-   ```sh
-   cd 3x-ui
-   docker compose down
-   docker compose pull 3x-ui
-   docker compose up -d
-   ```
-
-5. **Remove 3x-ui from Docker:**
-
-   ```sh
-   docker stop 3x-ui
-   docker rm 3x-ui
-   cd --
-   rm -r 3x-ui
-   ```
-
-</details>
-
-## Nginx Settings
-<details>
-  <summary>Click for Reverse Proxy Configuration</summary>
-
-#### Nginx Reverse Proxy
 ```nginx
 location / {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -213,374 +225,125 @@ location / {
     proxy_set_header Host $http_host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header Range $http_range;
-    proxy_set_header If-Range $http_if_range; 
+    proxy_set_header If-Range $http_if_range;
     proxy_redirect off;
     proxy_pass http://127.0.0.1:2053;
 }
 ```
 
-#### Nginx sub-path
-- Ensure that the "URI Path" in the `/sub` panel settings is the same.
-- The `url` in the panel settings needs to end with `/`.   
+ถ้าใช้ Sub-path ต้องตั้งค่า URI Path ใน Panel ให้ตรงกับ Nginx และ URL ต้องลงท้ายด้วย `/`
 
-```nginx
-location /sub {
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header Range $http_range;
-    proxy_set_header If-Range $http_if_range; 
-    proxy_redirect off;
-    proxy_pass http://127.0.0.1:2053;
-}
-```
-</details>
+## API ที่มีในรุ่นนี้
 
-## Recommended OS
+API ต้องผ่านการเข้าสู่ระบบก่อนใช้งาน
 
-- Ubuntu 20.04+
-- Debian 11+
-- CentOS 8+
-- OpenEuler 22.03+
-- Fedora 36+
-- Arch Linux
-- Parch Linux
-- Manjaro
-- Armbian
-- AlmaLinux 8.0+
-- Rocky Linux 8+
-- Oracle Linux 8+
-- OpenSUSE Tubleweed
-- Amazon Linux 2023
-- Windows x64
+### API สำหรับ Inbounds
 
-## Supported Architectures and Devices
+Base path:
 
-<details>
-  <summary>Click for Supported Architectures and devices details</summary>
-
-Our platform offers compatibility with a diverse range of architectures and devices, ensuring flexibility across various computing environments. The following are key architectures that we support:
-
-- **amd64**: This prevalent architecture is the standard for personal computers and servers, accommodating most modern operating systems seamlessly.
-
-- **x86 / i386**: Widely adopted in desktop and laptop computers, this architecture enjoys broad support from numerous operating systems and applications, including but not limited to Windows, macOS, and Linux systems.
-
-- **armv8 / arm64 / aarch64**: Tailored for contemporary mobile and embedded devices, such as smartphones and tablets, this architecture is exemplified by devices like Raspberry Pi 4, Raspberry Pi 3, Raspberry Pi Zero 2/Zero 2 W, Orange Pi 3 LTS, and more.
-
-- **armv7 / arm / arm32**: Serving as the architecture for older mobile and embedded devices, it remains widely utilized in devices like Orange Pi Zero LTS, Orange Pi PC Plus, Raspberry Pi 2, among others.
-
-- **armv6 / arm / arm32**: Geared towards very old embedded devices, this architecture, while less prevalent, is still in use. Devices such as Raspberry Pi 1, Raspberry Pi Zero/Zero W, rely on this architecture.
-
-- **armv5 / arm / arm32**: An older architecture primarily associated with early embedded systems, it is less common today but may still be found in legacy devices like early Raspberry Pi versions and some older smartphones.
-
-- **s390x**: This architecture is commonly used in IBM mainframe computers and offers high performance and reliability for enterprise workloads.
-</details>
-
-## Languages
-
-- English
-- Persian
-- Traditional Chinese
-- Simplified Chinese
-- Japanese
-- Russian
-- Vietnamese
-- Spanish
-- Indonesian
-- Ukrainian
-- Turkish
-- Português (Brazil)
-
-
-## Features
-
-- System Status Monitoring
-- Search within all inbounds and clients
-- Dark/Light theme
-- Supports multi-user and multi-protocol
-- Supports protocols, including VMESS, VLESS, Trojan, Shadowsocks, Dokodemo-door, Socks, HTTP, wireguard
-- Supports XTLS native Protocols, including RPRX-Direct, Vision, REALITY
-- Traffic statistics, traffic limit, expiration time limit
-- Customizable Xray configuration templates
-- Supports HTTPS access panel (self-provided domain name + SSL certificate)
-- Supports One-Click SSL certificate application and automatic renewal
-- For more advanced configuration items, please refer to the panel
-- Fixes API routes (user setting will be created with API)
-- Supports changing configs by different items provided in the panel.
-- Supports export/import database from the panel
-
-
-## Default Panel Settings
-
-<details>
-  <summary>Click for default settings details</summary>
-
-### Username, Password, Port, and Web Base Path
-
-If you choose not to modify these settings, they will be generated randomly (this does not apply to Docker).
-
-**Default Settings for Docker:**
-- **Username:** admin
-- **Password:** admin
-- **Port:** 2053
-
-### Database Management:
-
-  You can conveniently perform database Backups and Restores directly from the panel.
-
-- **Database Path:**
-  - `/etc/x-ui/x-ui.db`
-
-
-### Web Base Path
-
-1. **Reset Web Base Path:**
-   - Open your terminal.
-   - Run the `x-ui` command.
-   - Select the option to `Reset Web Base Path`.
-
-2. **Generate or Customize Path:**
-   - The path will be randomly generated, or you can enter a custom path.
-
-3. **View Current Settings:**
-   - To view your current settings, use the `x-ui settings` command in the terminal or `View Current Settings` in `x-ui`
-
-### Security Recommendation:
-- For enhanced security, use a long, random word in your URL structure.
-
-**Examples:**
-- `http://ip:port/*webbasepath*/panel`
-- `http://domain:port/*webbasepath*/panel`
-
-</details>
-
-## WARP Configuration
-
-<details>
-  <summary>Click for WARP configuration details</summary>
-
-#### Usage
-
-**For versions `v2.1.0` and later:**
-
-WARP is built-in, and no additional installation is required. Simply turn on the necessary configuration in the panel.
-
-</details>
-
-## IP Limit
-
-<details>
-  <summary>Click for IP limit details</summary>
-
-#### Usage
-
-**Note:** IP Limit won't work correctly when using IP Tunnel.
-
-- **For versions up to `v1.6.1`:**
-  - The IP limit is built-in to the panel
-
-**For versions `v1.7.0` and newer:**
-
-To enable the IP Limit functionality, you need to install `fail2ban` and its required files by following these steps:
-
-1. Run the `x-ui` command in the terminal, then choose `IP Limit Management`.
-2. You will see the following options:
-
-   - **Change Ban Duration:** Adjust the duration of bans.
-   - **Unban Everyone:** Lift all current bans.
-   - **Check Logs:** Review the logs.
-   - **Fail2ban Status:** Check the status of `fail2ban`.
-   - **Restart Fail2ban:** Restart the `fail2ban` service.
-   - **Uninstall Fail2ban:** Uninstall Fail2ban with configuration.
-
-3. Add a path for the access log on the panel by setting `Xray Configs/log/Access log` to `./access.log` then save and restart xray.
-
-- **For versions before `v2.1.3`:**
-  - You need to set the access log path manually in your Xray configuration:
-
-    ```sh
-    "log": {
-      "access": "./access.log",
-      "dnsLog": false,
-      "loglevel": "warning"
-    },
-    ```
-
-- **For versions `v2.1.3` and newer:**
-  - There is an option for configuring `access.log` directly from the panel.
-
-</details>
-
-## Telegram Bot
-
-<details>
-  <summary>Click for Telegram bot details</summary>
-
-#### Usage
-
-The web panel supports daily traffic, panel login, database backup, system status, client info, and other notification and functions through the Telegram Bot. To use the bot, you need to set the bot-related parameters in the panel, including:
-
-- Telegram Token
-- Admin Chat ID(s)
-- Notification Time (in cron syntax)
-- Expiration Date Notification
-- Traffic Cap Notification
-- Database Backup
-- CPU Load Notification
-
-
-**Reference syntax:**
-
-- `30 \* \* \* \* \*` - Notify at the 30s of each point
-- `0 \*/10 \* \* \* \*` - Notify at the first second of each 10 minutes
-- `@hourly` - Hourly notification
-- `@daily` - Daily notification (00:00 in the morning)
-- `@weekly` - weekly notification
-- `@every 8h` - Notify every 8 hours
-
-### Telegram Bot Features
-
-- Report periodic
-- Login notification
-- CPU threshold notification
-- Threshold for Expiration time and Traffic to report in advance
-- Support client report menu if client's telegram username added to the user's configurations
-- Support telegram traffic report searched with UUID (VMESS/VLESS) or Password (TROJAN) - anonymously
-- Menu-based bot
-- Search client by email (only admin)
-- Check all inbounds
-- Check server status
-- Check depleted users
-- Receive backup by request and in periodic reports
-- Multi-language bot
-
-### Setting up Telegram bot
-
-- Start [Botfather](https://t.me/BotFather) in your Telegram account:
-    ![Botfather](./media/botfather.png)
-
-- Create a new Bot using /newbot command: It will ask you 2 questions, A name and a username for your bot. Note that the username has to end with the word "bot".
-    ![Create new bot](./media/newbot.png)
-
-- Start the bot you've just created. You can find the link to your bot here.
-    ![token](./media/token.png)
-
-- Enter your panel and config Telegram bot settings like below:
-![Panel Config](./media/panel-bot-config.png)
-
-Enter your bot token in input field number 3.
-Enter the user ID in input field number 4. The Telegram accounts with this id will be the bot admin. (You can enter more than one, Just separate them with ,)
-
-- How to get Telegram user ID? Use this [bot](https://t.me/useridinfobot), Start the bot and it will give you the Telegram user ID.
-![User ID](./media/user-id.png)
-
-</details>
-
-## API Routes
-
-<details>
-  <summary>Click for API routes details</summary>
-
-#### Usage
-
-- [API Documentation](https://www.postman.com/hsanaei/3x-ui/collection/q1l5l0u/3x-ui)
-- `/login` with `POST` user data: `{username: '', password: ''}` for login
-- `/panel/api/inbounds` base for following actions:
-
-| Method | Path                               | Action                                      |
-| :----: | ---------------------------------- | ------------------------------------------- |
-| `GET`  | `"/list"`                          | Get all inbounds                            |
-| `GET`  | `"/get/:id"`                       | Get inbound with inbound.id                 |
-| `GET`  | `"/getClientTraffics/:email"`      | Get Client Traffics with email              |
-| `GET`  | `"/getClientTrafficsById/:id"`     | Get client's traffic By ID |
-| `GET`  | `"/createbackup"`                  | Telegram bot sends backup to admins         |
-| `POST` | `"/add"`                           | Add inbound                                 |
-| `POST` | `"/del/:id"`                       | Delete Inbound                              |
-| `POST` | `"/update/:id"`                    | Update Inbound                              |
-| `POST` | `"/clientIps/:email"`              | Client Ip address                           |
-| `POST` | `"/clearClientIps/:email"`         | Clear Client Ip address                     |
-| `POST` | `"/addClient"`                     | Add Client to inbound                       |
-| `POST` | `"/:id/delClient/:clientId"`       | Delete Client by clientId\*                 |
-| `POST` | `"/updateClient/:clientId"`        | Update Client by clientId\*                 |
-| `POST` | `"/:id/resetClientTraffic/:email"` | Reset Client's Traffic                      |
-| `POST` | `"/resetAllTraffics"`              | Reset traffics of all inbounds              |
-| `POST` | `"/resetAllClientTraffics/:id"`    | Reset traffics of all clients in an inbound |
-| `POST` | `"/delDepletedClients/:id"`        | Delete inbound depleted clients (-1: all)   |
-| `POST` | `"/onlines"`                       | Get Online users ( list of emails )         |
-
-\*- The field `clientId` should be filled by:
-
-- `client.id` for VMESS and VLESS
-- `client.password` for TROJAN
-- `client.email` for Shadowsocks
-
-- [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/5146551-dda3cab3-0e33-485f-96f9-d4262f437ac5?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D5146551-dda3cab3-0e33-485f-96f9-d4262f437ac5%26entityType%3Dcollection%26workspaceId%3Dd64f609f-485a-4951-9b8f-876b3f917124)
-</details>
-
-## Environment Variables
-
-<details>
-  <summary>Click for environment variables details</summary>
-
-#### Usage
-
-| Variable       |                      Type                      | Default       |
-| -------------- | :--------------------------------------------: | :------------ |
-| XUI_LOG_LEVEL  | `"debug"` \| `"info"` \| `"warn"` \| `"error"` | `"info"`      |
-| XUI_DEBUG      |                   `boolean`                    | `false`       |
-| XUI_BIN_FOLDER |                    `string`                    | `"bin"`       |
-| XUI_DB_FOLDER  |                    `string`                    | `"/etc/x-ui"` |
-| XUI_LOG_FOLDER |                    `string`                    | `"/var/log"`  |
-
-Example:
-
-```sh
-XUI_BIN_FOLDER="bin" XUI_DB_FOLDER="/etc/x-ui" go build main.go
+```text
+/panel/api/inbounds
 ```
 
-</details>
+เส้นทางหลักที่มีให้ใช้ ได้แก่:
 
-## Preview
+| Method | Path | หน้าที่ |
+| --- | --- | --- |
+| GET | `/list` | รายการ Inbounds |
+| GET | `/get/:id` | รายละเอียด Inbound |
+| GET | `/getClientTraffics/:email` | ทราฟฟิกของ Client |
+| POST | `/add` | เพิ่ม Inbound |
+| POST | `/update/:id` | แก้ไข Inbound |
+| POST | `/del/:id` | ลบ Inbound |
+| POST | `/addClient` | เพิ่ม Client |
+| POST | `/updateClient/:clientId` | แก้ไข Client |
+| POST | `/:id/delClient/:clientId` | ลบ Client |
+| POST | `/:id/resetClientTraffic/:email` | รีเซ็ตทราฟฟิก Client |
+| POST | `/onlines` | รายการ Client ที่ออนไลน์ |
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/01-overview-dark.png">
-  <img alt="3x-ui" src="./media/01-overview-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/02-inbounds-dark.png">
-  <img alt="3x-ui" src="./media/02-inbounds-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/03-add-inbound-dark.png">
-  <img alt="3x-ui" src="./media/03-add-inbound-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/04-add-client-dark.png">
-  <img alt="3x-ui" src="./media/04-add-client-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/05-settings-dark.png">
-  <img alt="3x-ui" src="./media/05-settings-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/06-configs-dark.png">
-  <img alt="3x-ui" src="./media/06-configs-light.png">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/07-bot-dark.png">
-  <img alt="3x-ui" src="./media/07-bot-light.png">
-</picture>
+### API รุ่นที่ 2
 
-## A Special Thanks to
+Base path:
 
-- [alireza0](https://github.com/alireza0/)
+```text
+/panel/api/v2
+```
 
-## Acknowledgment
+รองรับการอ่านและจัดการ `packages`, `users`, `nodes` และ `subscriptions` รวมถึง endpoint `/health`
 
-- [Iran v2ray rules](https://github.com/chocolate4u/Iran-v2ray-rules) (License: **GPL-3.0**): _Enhanced v2ray/xray and v2ray/xray-clients routing rules with built-in Iranian domains and a focus on security and adblocking._
-- [Russia v2ray rules](https://github.com/runetfreedom/russia-v2ray-rules-dat) (License: **GPL-3.0**): _This repository contains automatically updated V2Ray routing rules based on data on blocked domains and addresses in Russia._
+## ระบบและสถาปัตยกรรมที่รองรับ
 
-## Stargazers over Time
+สคริปต์ติดตั้งและ Release ปัจจุบันมีแพ็กเกจสำหรับ:
 
-[![Stargazers over time](https://starchart.cc/MHSanaei/3x-ui.svg?variant=adaptive)](https://starchart.cc/MHSanaei/3x-ui)
+- `amd64`
+- `arm64`
+- `armv7`
+- `armv6`
+- `armv5`
+- `386`
+- `s390x`
+
+ระบบ Linux ที่ควรใช้คือ Ubuntu 20.04+, Debian 11+, CentOS 8+, Fedora 36+, AlmaLinux 8+, Rocky Linux 8+, Oracle Linux 8+, OpenEuler 22.03+, Amazon Linux 2023, Arch Linux, Manjaro, Armbian และ OpenSUSE Tumbleweed ตามความเข้ากันได้ของเครื่อง
+
+## แนวทางความปลอดภัย
+
+- เปลี่ยนชื่อผู้ใช้และรหัสผ่านเริ่มต้นทันที
+- ใช้รหัสผ่านยาวและไม่ซ้ำกับบริการอื่น
+- ใช้ Web Base Path ที่เดายากและเปิด HTTPS
+- จำกัดพอร์ตด้วย Firewall และเปิดเฉพาะพอร์ตที่จำเป็น
+- สำรองฐานข้อมูลก่อนแก้ไข Xray หรือ Restore
+- จำกัดสิทธิ์ Telegram Bot เฉพาะ Chat ID ของผู้ดูแล
+- อัปเดตระบบปฏิบัติการและตรวจสอบ Log เป็นระยะ
+- อย่าเผยแพร่ไฟล์ฐานข้อมูล, Certificate, Private Key หรือ Token ลง GitHub
+
+## โครงสร้างหน้าเว็บ
+
+เมนูหลักของ Sereality Panel มีดังนี้:
+
+| หน้า | URL | รายละเอียด |
+| --- | --- | --- |
+| Dashboard | `/panel/` | ภาพรวมระบบและทรัพยากร |
+| Inbounds | `/panel/inbounds` | จัดการ Inbounds และ Clients |
+| Packages | `/panel/package-manager` | จัดการแพ็กเกจ |
+| Users | `/panel/user-manager` | จัดการผู้ใช้ |
+| Subscriptions | `/panel/subscription-manager` | จัดการ Subscription |
+| Nodes | `/panel/node-manager` | จัดการ Node |
+| Settings | `/panel/settings` | ตั้งค่า Panel และการแจ้งเตือน |
+| Xray Configs | `/panel/xray` | ตั้งค่า Xray, Routing และ DNS |
+
+## Roadmap
+
+- เปลี่ยน Branding และปรับความปลอดภัยพื้นฐาน — ดำเนินการแล้ว
+- Dashboard และ Package/User management — มีโครงสร้างรุ่นแรกแล้ว
+- Multi-node และ API ที่เป็นมาตรฐานมากขึ้น — พัฒนาต่อ
+- Subscription, สมาชิก และระบบเชิงพาณิชย์ — อยู่ในแผนระยะถัดไป
+- ระบบ Backup/Rollback และการตรวจสอบความปลอดภัยเชิงลึก — พัฒนาต่อเป็นระยะ
+
+## การพัฒนาโปรเจกต์
+
+```bash
+git clone https://github.com/natthapon07032005/sereality-panel.git
+cd sereality-panel
+```
+
+ตรวจสอบโค้ด Go:
+
+```bash
+go test ./web/...
+```
+
+ตรวจสอบสคริปต์ติดตั้ง:
+
+```bash
+bash -n install.sh
+bash -n x-ui.sh
+bash installer/repository_test.sh
+```
+
+## License และเครดิต
+
+Sereality Panel เผยแพร่ภายใต้ [GNU GPL v3](./LICENSE)
+
+โปรเจกต์นี้พัฒนาต่อยอดจาก [3x-ui โดย MHSanaei](https://github.com/MHSanaei/3x-ui) และใช้ Xray Core รวมถึงชุดกฎ GeoIP/GeoSite จากโครงการโอเพนซอร์สที่เกี่ยวข้อง โปรดตรวจสอบ License ของส่วนประกอบแต่ละรายการก่อนนำไปแจกจ่ายต่อ
+
+สำหรับ Source Code, Issue และ Release ให้ดูที่ [GitHub Repository ของ Sereality Panel](https://github.com/natthapon07032005/sereality-panel)
