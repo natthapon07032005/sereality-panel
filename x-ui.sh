@@ -8,6 +8,8 @@ plain='\033[0m'
 
 SEREALITY_GITHUB_REPOSITORY="natthapon07032005/sereality-panel"
 SEREALITY_GITHUB_REF="main"
+SEREALITY_CLI_NAME="sp"
+SEREALITY_LEGACY_CLI_NAME="x-ui"
 
 sereality_raw_asset_url() {
     local ref="$1"
@@ -210,9 +212,10 @@ update_menu() {
         return 0
     fi
 
-    wget -O /usr/bin/x-ui "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
+    wget -O "/usr/bin/${SEREALITY_CLI_NAME}" "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
     chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
+    chmod +x "/usr/bin/${SEREALITY_CLI_NAME}"
+    ln -sfn "${SEREALITY_CLI_NAME}" "/usr/bin/${SEREALITY_LEGACY_CLI_NAME}"
 
     if [[ $? == 0 ]]; then
         echo -e "${green}Update successful. The panel has automatically restarted.${plain}"
@@ -609,13 +612,14 @@ enable_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
+    wget -O "/usr/bin/${SEREALITY_CLI_NAME}" -N "$(sereality_raw_asset_url "$SEREALITY_GITHUB_REF" 'x-ui.sh')"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
         before_show_menu
     else
-        chmod +x /usr/bin/x-ui
+        chmod +x "/usr/bin/${SEREALITY_CLI_NAME}"
+        ln -sfn "${SEREALITY_CLI_NAME}" "/usr/bin/${SEREALITY_LEGACY_CLI_NAME}"
         LOGI "Upgrade script succeeded, Please rerun the script"
         before_show_menu
     fi
@@ -1755,22 +1759,22 @@ SSH_port_forwarding() {
 
 show_usage() {
     echo -e "┌───────────────────────────────────────────────────────┐
-│  ${blue}x-ui control menu usages (subcommands):${plain}              │
+│  ${blue}${SEREALITY_CLI_NAME} control menu usages (subcommands):${plain}              │
 │                                                       │
-│  ${blue}x-ui${plain}              - Admin Management Script          │
-│  ${blue}x-ui start${plain}        - Start                            │
-│  ${blue}x-ui stop${plain}         - Stop                             │
-│  ${blue}x-ui restart${plain}      - Restart                          │
-│  ${blue}x-ui status${plain}       - Current Status                   │
-│  ${blue}x-ui settings${plain}     - Current Settings                 │
-│  ${blue}x-ui enable${plain}       - Enable Autostart on OS Startup   │
-│  ${blue}x-ui disable${plain}      - Disable Autostart on OS Startup  │
-│  ${blue}x-ui log${plain}          - Check logs                       │
-│  ${blue}x-ui banlog${plain}       - Check Fail2ban ban logs          │
-│  ${blue}x-ui update${plain}       - Update                           │
-│  ${blue}x-ui legacy${plain}       - legacy version                   │
-│  ${blue}x-ui install${plain}      - Install                          │
-│  ${blue}x-ui uninstall${plain}    - Uninstall                        │
+│  ${blue}${SEREALITY_CLI_NAME}${plain}              - Admin Management Script          │
+│  ${blue}${SEREALITY_CLI_NAME} start${plain}        - Start                            │
+│  ${blue}${SEREALITY_CLI_NAME} stop${plain}         - Stop                             │
+│  ${blue}${SEREALITY_CLI_NAME} restart${plain}      - Restart                          │
+│  ${blue}${SEREALITY_CLI_NAME} status${plain}       - Current Status                   │
+│  ${blue}${SEREALITY_CLI_NAME} settings${plain}     - Current Settings                 │
+│  ${blue}${SEREALITY_CLI_NAME} enable${plain}       - Enable Autostart on OS Startup   │
+│  ${blue}${SEREALITY_CLI_NAME} disable${plain}      - Disable Autostart on OS Startup  │
+│  ${blue}${SEREALITY_CLI_NAME} log${plain}          - Check logs                       │
+│  ${blue}${SEREALITY_CLI_NAME} banlog${plain}       - Check Fail2ban ban logs          │
+│  ${blue}${SEREALITY_CLI_NAME} update${plain}       - Update                           │
+│  ${blue}${SEREALITY_CLI_NAME} legacy${plain}       - legacy version                   │
+│  ${blue}${SEREALITY_CLI_NAME} install${plain}      - Install                          │
+│  ${blue}${SEREALITY_CLI_NAME} uninstall${plain}    - Uninstall                        │
 └───────────────────────────────────────────────────────┘"
 }
 

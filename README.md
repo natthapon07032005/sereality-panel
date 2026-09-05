@@ -123,7 +123,7 @@ Inbound รองรับโปรโตคอลต่อไปนี้:
 
 ### เครื่องมือดูแลเซิร์ฟเวอร์
 
-ผ่านคำสั่ง `x-ui` ยังมีเครื่องมือสำหรับ:
+ผ่านคำสั่งสั้นของเรา `sp` ยังมีเครื่องมือสำหรับ (คำสั่งเดิม `x-ui` ยังใช้เป็น alias ได้):
 
 - จัดการ SSL ด้วย ACME และ Cloudflare
 - จัดการ IP Limit และ Fail2ban
@@ -154,7 +154,7 @@ VERSION=v1.0.0 && bash <(curl -Ls "https://raw.githubusercontent.com/natthapon07
 หลังติดตั้งเสร็จ ให้ดูข้อมูลเข้าสู่ระบบและ URL ด้วย:
 
 ```bash
-x-ui settings
+sp settings
 ```
 
 โดยปกติระบบจะสุ่มค่าที่สำคัญให้ในระหว่างติดตั้ง ควรบันทึกชื่อผู้ใช้ รหัสผ่าน พอร์ต และ Web Base Path ไว้ในที่ปลอดภัย
@@ -163,26 +163,26 @@ x-ui settings
 
 | คำสั่ง | หน้าที่ |
 | --- | --- |
-| `x-ui` | เปิดเมนูจัดการแบบโต้ตอบ |
-| `x-ui start` | เริ่มบริการ Panel |
-| `x-ui stop` | หยุดบริการ Panel |
-| `x-ui restart` | รีสตาร์ต Panel และ Xray |
-| `x-ui status` | ดูสถานะบริการ |
-| `x-ui settings` | แสดงค่าการตั้งค่าปัจจุบัน |
-| `x-ui enable` | เปิด Autostart |
-| `x-ui disable` | ปิด Autostart |
-| `x-ui log` | ดูและจัดการ Log |
-| `x-ui banlog` | ดู Log ของ Fail2ban/IP Limit |
-| `x-ui update` | อัปเดต Panel |
-| `x-ui legacy` | เลือกติดตั้งรุ่นที่ระบุ |
-| `x-ui install` | ติดตั้ง Panel |
-| `x-ui uninstall` | ถอนการติดตั้ง Panel |
+| `sp` | เปิดเมนูจัดการแบบโต้ตอบ |
+| `sp start` | เริ่มบริการ Panel |
+| `sp stop` | หยุดบริการ Panel |
+| `sp restart` | รีสตาร์ต Panel และ Xray |
+| `sp status` | ดูสถานะบริการ |
+| `sp settings` | แสดงค่าการตั้งค่าปัจจุบัน |
+| `sp enable` | เปิด Autostart |
+| `sp disable` | ปิด Autostart |
+| `sp log` | ดูและจัดการ Log |
+| `sp banlog` | ดู Log ของ Fail2ban/IP Limit |
+| `sp update` | อัปเดต Panel |
+| `sp legacy` | เลือกติดตั้งรุ่นที่ระบุ |
+| `sp install` | ติดตั้ง Panel |
+| `sp uninstall` | ถอนการติดตั้ง Panel |
 
-คำสั่ง `x-ui legacy` จะถามหมายเลขเวอร์ชัน เช่น `1.0.0` และจะแปลงเป็น Tag `v1.0.0` ให้อัตโนมัติ ต้องใช้เฉพาะเวอร์ชันที่มีอยู่ใน Release ของ Sereality Panel
+คำสั่ง `sp legacy` จะถามหมายเลขเวอร์ชัน เช่น `1.0.0` และจะแปลงเป็น Tag `v1.0.0` ให้อัตโนมัติ ต้องใช้เฉพาะเวอร์ชันที่มีอยู่ใน Release ของ Sereality Panel
 
 ## เมนูจัดการแบบโต้ตอบ
 
-เมื่อรัน `x-ui` จะมีเมนูหลักดังนี้:
+เมื่อรัน `sp` จะมีเมนูหลักดังนี้:
 
 | เมนู | หน้าที่ |
 | ---: | --- |

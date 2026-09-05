@@ -28,6 +28,10 @@ test_first_sereality_release_version_is_accepted() {
     [[ "$got" == "v1.0.0" ]]
 }
 
+test_sereality_cli_uses_short_command_name() {
+    [[ "${SEREALITY_CLI_NAME}" == "sp" ]]
+}
+
 test_management_script_points_to_sereality_repository() {
     local got
     got="$(bash "$(dirname "${BASH_SOURCE[0]}")/../x-ui.sh" --print-sereality-config)"
@@ -39,5 +43,6 @@ test_release_asset_url_uses_sereality_repository
 test_control_script_url_uses_sereality_repository
 test_checksum_url_matches_release_asset
 test_first_sereality_release_version_is_accepted
+test_sereality_cli_uses_short_command_name
 test_management_script_points_to_sereality_repository
 printf 'installer repository tests: ok\n'

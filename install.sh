@@ -9,6 +9,8 @@ plain='\033[0m'
 cur_dir=$(pwd)
 SEREALITY_GITHUB_REPOSITORY="natthapon07032005/sereality-panel"
 SEREALITY_GITHUB_REF="main"
+SEREALITY_CLI_NAME="sp"
+SEREALITY_LEGACY_CLI_NAME="x-ui"
 
 sereality_release_asset_url() {
     local version="$1"
@@ -215,7 +217,7 @@ config_after_install() {
             echo -e "${green}WebBasePath: ${config_webBasePath}${plain}"
             echo -e "${green}Access URL: http://${server_ip}:${config_port}/${config_webBasePath}${plain}"
             echo -e "###############################################"
-            echo -e "${yellow}If you forgot your login info, you can type 'x-ui settings' to check${plain}"
+            echo -e "${yellow}If you forgot your login info, you can type '${SEREALITY_CLI_NAME} settings' to check${plain}"
         else
             local config_webBasePath=$(gen_random_string 15)
             echo -e "${yellow}WebBasePath is missing or too short. Generating a new one...${plain}"
@@ -235,7 +237,7 @@ config_after_install() {
             echo -e "${green}Username: ${config_username}${plain}"
             echo -e "${green}Password: ${config_password}${plain}"
             echo -e "###############################################"
-            echo -e "${yellow}If you forgot your login info, you can type 'x-ui settings' to check${plain}"
+            echo -e "${yellow}If you forgot your login info, you can type '${SEREALITY_CLI_NAME} settings' to check${plain}"
         else
             echo -e "${green}Username, Password, and WebBasePath are properly set. Exiting...${plain}"
         fi
@@ -301,9 +303,10 @@ install_x-ui() {
 
     chmod +x x-ui bin/xray-linux-$(arch)
     cp -f x-ui.service /etc/systemd/system/
-    wget -O /usr/bin/x-ui "$(sereality_raw_asset_url 'x-ui.sh')"
+    wget -O "/usr/bin/${SEREALITY_CLI_NAME}" "$(sereality_raw_asset_url 'x-ui.sh')"
     chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
+    chmod +x "/usr/bin/${SEREALITY_CLI_NAME}"
+    ln -sfn "${SEREALITY_CLI_NAME}" "/usr/bin/${SEREALITY_LEGACY_CLI_NAME}"
     config_after_install
 
     systemctl daemon-reload
@@ -312,22 +315,22 @@ install_x-ui() {
     echo -e "${green}x-ui ${tag_version}${plain} installation finished, it is running now..."
     echo -e ""
     echo -e "┌───────────────────────────────────────────────────────┐
-│  ${blue}x-ui control menu usages (subcommands):${plain}              │
+│  ${blue}${SEREALITY_CLI_NAME} control menu usages (subcommands):${plain}              │
 │                                                       │
-│  ${blue}x-ui${plain}              - Admin Management Script          │
-│  ${blue}x-ui start${plain}        - Start                            │
-│  ${blue}x-ui stop${plain}         - Stop                             │
-│  ${blue}x-ui restart${plain}      - Restart                          │
-│  ${blue}x-ui status${plain}       - Current Status                   │
-│  ${blue}x-ui settings${plain}     - Current Settings                 │
-│  ${blue}x-ui enable${plain}       - Enable Autostart on OS Startup   │
-│  ${blue}x-ui disable${plain}      - Disable Autostart on OS Startup  │
-│  ${blue}x-ui log${plain}          - Check logs                       │
-│  ${blue}x-ui banlog${plain}       - Check Fail2ban ban logs          │
-│  ${blue}x-ui update${plain}       - Update                           │
-│  ${blue}x-ui legacy${plain}       - legacy version                   │
-│  ${blue}x-ui install${plain}      - Install                          │
-│  ${blue}x-ui uninstall${plain}    - Uninstall                        │
+│  ${blue}${SEREALITY_CLI_NAME}${plain}              - Admin Management Script          │
+│  ${blue}${SEREALITY_CLI_NAME} start${plain}        - Start                            │
+│  ${blue}${SEREALITY_CLI_NAME} stop${plain}         - Stop                             │
+│  ${blue}${SEREALITY_CLI_NAME} restart${plain}      - Restart                          │
+│  ${blue}${SEREALITY_CLI_NAME} status${plain}       - Current Status                   │
+│  ${blue}${SEREALITY_CLI_NAME} settings${plain}     - Current Settings                 │
+│  ${blue}${SEREALITY_CLI_NAME} enable${plain}       - Enable Autostart on OS Startup   │
+│  ${blue}${SEREALITY_CLI_NAME} disable${plain}      - Disable Autostart on OS Startup  │
+│  ${blue}${SEREALITY_CLI_NAME} log${plain}          - Check logs                       │
+│  ${blue}${SEREALITY_CLI_NAME} banlog${plain}       - Check Fail2ban ban logs          │
+│  ${blue}${SEREALITY_CLI_NAME} update${plain}       - Update                           │
+│  ${blue}${SEREALITY_CLI_NAME} legacy${plain}       - legacy version                   │
+│  ${blue}${SEREALITY_CLI_NAME} install${plain}      - Install                          │
+│  ${blue}${SEREALITY_CLI_NAME} uninstall${plain}    - Uninstall                        │
 └───────────────────────────────────────────────────────┘"
 }
 
